@@ -22,7 +22,7 @@ proc Lista<int>::reorderOddAndEven()
 	Begin
 		pImpar <─ instance.head
 		if pImpar then
-			pPar <─ pPar->getNext()
+			pPar <─ pImpar->getNext()
 			pPrimerPar <─ pPar
 		endif
 		
@@ -53,12 +53,12 @@ Se requiere que cree la función ``func sortedIntersect(Lista<entero> a, b): Lis
 𝑏 = (4, 5, 9, 12, 15)
 𝑠𝑜𝑟𝑡𝑒𝑑𝐼𝑛𝑡𝑒𝑟𝑠𝑒𝑐𝑡(𝑎, 𝑏) = (4, 5)
 ```
-func sortedInserct(Lista<int>: a, b):Lista<int>
+func sortedIntersect(Lista<int>: a, b):Lista<int>
 	Var
 		Lista<int>: result
 		int: valorA, valorB
 	Begin
-		result.construct()
+		result.construir()
 		while ¬a.esVacia() ^ ¬b.esVacia() do
 			valorA <─ a.consultar(1)
 			valorB <─ b.consultar(1)
@@ -67,11 +67,12 @@ func sortedInserct(Lista<int>: a, b):Lista<int>
 				result.insertar(valorA, result.getLong() +1)
 				a.eliminar(1)
 				b.eliminar(1)
-			endif
-			if valorA < valorB then
-				a.eliminar(1)
 			else
-				b.eliminar(1)
+				if valorA < valorB then
+					a.eliminar(1)
+				else
+					b.eliminar(1)
+				endif
 			endif
 		endwhile
 		return result
@@ -162,8 +163,8 @@ NO PUEDE USAR APUNTADORES.
 ```
 func rollingStandarDesviation(List<float> target, int: window): List<float>
 	Var
-		Lista<floar>: result, mediaMovil
-		Cola<floar>: colaAux
+		Lista<float>: result, mediaMovil
+		Cola<float>: colaAux
 		float: sum, num, cuadrado
 	Begin
 		result.construir()
@@ -177,10 +178,10 @@ func rollingStandarDesviation(List<float> target, int: window): List<float>
 			sum <─ sum + cuadrado
 			colaAux.encolar(cuadrado)
 			
-			if colaAux.getLong() >= window then
+			if colaAux.getLong() < window then
 				mediaMovil.eliminar(1)
 			endif
-			if colaAux.getLong() < window then
+			if colaAux.getLong() >= window then
 				sum <─ sum-colaAux.getFrente()
 				colaAux.desencolar()
 			endif
@@ -283,8 +284,153 @@ Private proc Lista<int>::insertar(pointer to Nodo<int>: p, int: i)
 		endif
 endproc
 ```
+
+**Ejercicio 3**
+Dada una lista de números enteros, escriba la función:
+``func trendChangesInWindows(List<int>: target, int k): Lista<int>``
+Que reciba un entero k y devuelva una nueva lista donde cada posición indique cuántas veces la secuencia de números dentro de la ventana cambia de tendencia, es decir, de creciente a decreciente o de decreciente a creciente.
+Ejemplo:
+Entrada: [1, 3, 2, 4, 3, 5], k = 4
+Salida: [2, 2, 2]
+>NO DEBE USAR APUNTADORES EN SU SOLUCIÓN. Su solución debe ser a lo sumo O(n)
+
+```
+func trendChangesInWindow(List<int>: target, int: k): Lista<int>
+	Var
+		Lista<int>: result
+		Cola<int>: window
+		int: i, actual, counter
+		Cola<int>: signos
+		int: signoActual, s1, s2
+	Begin
+		result.construir()
+		window.construir()
+		signos.construir()
+		counter <─ 0
+
+		//Calcular la primera ventana
+		for i <─ 1 to k do
+			actual <─ target.consultar(1)
+			target.eliminar(1)
+
+			if window.getLong() >= 1 then
+				signoActual <─ 0
+				//Condición de aumento del contador
+				if window.getUltimo() < actual then
+					signoActual <─ 1
+				endif
+				if window.getUltimo() > actual then
+					signoActual <─ -1
+				endif
+				if signos.getLong() > 0 then
+					s1 <─ signos.getUltimo()
+					if (s1 = 1 ^ signoActual = -1) v (s1 = -1 ^ signoActual = 1) then
+						counter <─ counter + 1
+					endif
+				endif
+			endif
+			signos.encolar(signoActual)
+			window.encolar(actual)
+
+		endfor
+		result.insertar(counter, 1)
+		
+		while ¬target.esVacia() do
+			window.desencolar()
+
+			s1 <─ signos.getFrente()
+			signos.desencolar()
+			s2 <─ signos.getFrente()
+
+			if (s1 = 1 ^ s2 = -1) v (s1 = -1 ^ s2 = 1) then
+				counter <─ counter - 1
+			endif
+
+			actual <─ target.consultar(1)
+			target.eliminar(1)
+			signoActual <─ 0
+			if window.getUltimo() < actual then
+				signoActual <─ 1
+			endif
+			if window.getUltimo() > actual then
+				signoActual <─ -1
+			endif
+
+			s1 <─ signos.getUltimo()
+			if (s1 = 1 ^ signoActual = -1) v (s1 = -1 ^ signoActual = 1) then
+				counter <─ counter +1
+			endif
+
+			signos.encolar(signoActual)
+			window.encolar(actual)
+			result.insertar(counter, result.getLong() +1)
+		endwhile
+		
+		return result
+endfunc
+```
 ## Parcial 2-2025 mod2
 **Ejercicio 1**
+Dada una lista enlazada que contiene números enteros. De dicha lista se sabe que:
+- a. La primera mitad de la lista (primeros n/2 elementos) está ordenada de menor a mayor.
+- b. La segunda mitad de la lista (últimos n/2 elementos) está ordenada de menor a mayor.
+Extienda la clase lista con el método:
+``func Lista<int>::partialReorder(): Lista<int>``
+Que devuelva una lista nueva con los elementos de la lista original, pero ordenados de menor a mayor. 
+>La complejidad de esta función debe ser a lo sumo de O(n). DEBE USAR SOLO APUNTADORES EN SU SOLUCIÓN.
+```
+func Lista<int>::partialReorder(): Lista<int>
+    Var
+        Lista<int>: result
+        pointer to Nodo<int>: p1, p2
+        int: i, mitad
+    Begin
+        result.construir()
+        if ¬instance.head then
+            return result
+        endif
+
+        mitad <─ instance.long / 2
+
+        p1 <─ instance.head
+        p2 <─ instance.head
+        for i <─ 1 to mitad do
+            p2 <─ p2->getNext()
+        endfor
+
+        // Merge de [head .. antes de p2] con [p2 .. tail]
+        while p1 != p2 ^ p2 do
+            if p1->getInfo() <= p2->getInfo() then
+                result.insertar(p1, result.getLong() + 1)
+                p1 <─ p1->getNext()
+            else
+                result.insertar(p2, result.getLong() + 1)
+                p2 <─ p2->getNext()
+            endif
+        endwhile
+
+        while p1 != p2 do
+            result.insertar(p1, result.getLong() + 1)
+            p1 <─ p1->getNext()
+        endwhile
+
+        while p2 do
+            result.insertar(p2, result.getLong() + 1)
+            p2 <─ p2->getNext()
+        endwhile
+
+        return result
+endfunc
+```
+**Ejercicio 2**
+Dada una lista enlazada de números enteros, escriba la función:
+``func longestParityAlternatingSublist(Lista<int>: target): int``
+Que reciba una lista de enteros target y devuelva la longitud de la sublista contigua más larga donde los números alternan entre ser pares e impares. Ejemplo:
+Entrada: [1, 3, 2, 4, 3, 5, 5, 2]
+Salida: 6
+```
+
+```
 
 **Ejercicio 3**
 Dada una lista de números enteros, escriba la función:
@@ -304,13 +450,12 @@ func localInversionsInWindows(Lista<int>: target, int: k): Lista<int>
 		int: i, actual, counter, primeraVentana
 	Begin
 		window.construir()
-		primeraVentana.construir()
 		//Calcular la primera inversion
 		counter <─ 0
 		for i <─ 1 to k do
 			actual <─ target.consultar(1)
 			target.eliminar(1)
-			if window.getLong() > 1 then
+			if window.getLong() >= 1 then
 				if window.getUltimo() > actual then
 					counter <─ counter +1
 				endif
@@ -318,7 +463,7 @@ func localInversionsInWindows(Lista<int>: target, int: k): Lista<int>
 			
 			window.encolar(actual)
 		endfor
-		result.insertar(counter)
+		result.insertar(counter, 1)
 		
 		//Calcular las demas inversiones
 		while ¬target.esVacia() do
@@ -335,7 +480,7 @@ func localInversionsInWindows(Lista<int>: target, int: k): Lista<int>
 			endif
 			
 			window.encolar(actual)
-			result.insertar(contador, result.getLong()+1)
+			result.insertar(counter, result.getLong()+1)
 		endwhile
 		
 		return result
@@ -365,4 +510,36 @@ func expand(Lista<Lista<int>>: target): Lista<int>
 		
 		return result
 	endfunc
+```
+## Método media movil
+>Método explicado en clase para resolver la desviación estándar movil en un parcial
+
+```
+func mediaMovil(Lista<float>: target, int: window): Lista<float>
+	Var
+		Lista<float>: result
+		Cola<float>: cola
+		float: sum, num
+		int: i
+	Begin
+		result.construct()
+		cola.construct()
+		sum <─ 0
+		i <─ 1
+		while ¬target.esVacia() do
+			num <─ target.consultar(1)
+			cola.encolar(num)
+			sum <─ sum + num
+			if cola.getLong() > window then
+				sum <─ sum-cola.getFrente()
+				cola.desencolar()
+			endif
+			if cola.getLong() = window then
+				result.insertar(suma/window, result.getLong() +1)
+			endif
+			
+			target.eliminar(1)
+		endwhile
+		return result
+endfunc
 ```

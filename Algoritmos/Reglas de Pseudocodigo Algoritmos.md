@@ -23,6 +23,7 @@ menor que: **<**
 mayor igual que: **>=**
 menor igual que: **<=**
 igualdad: **=**
+desigualdad: **!=**
 and: **^**
 or: **v**
 not: **¬**
