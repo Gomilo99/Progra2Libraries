@@ -10,132 +10,164 @@ base:
   - "[[A-Algoritmos]]"
 ---
 # Reglas para pseudocodigo
-Utliza relgas basadas en el lenguaje C y C++
+Utiliza reglas basadas en el lenguaje C y C++.
 
-*Asignación:* <─
-ej: a <─ b "**a** se le asigna **b**"
+## Nota para exportar a PDF
+- Para evitar que líneas distintas se peguen en el PDF, usa siempre:
+  - listas con `-` o numeradas,
+  - bloques de código con triple comilla invertida,
+  - línea en blanco entre secciones.
 
-*Comentarios:* //`Comentario`
+## Asignación
+- Operador: `←` (en tus apuntes: `<─`)
+- Ejemplo: `a <─ b` ("a se le asigna b").
 
-*Expresiones Booleanas:* 
-mayor que: **>**
-menor que: **<**
-mayor igual que: **>=**
-menor igual que: **<=**
-igualdad: **=**
-desigualdad: **!=**
-and: **^**
-or: **v**
-not: **¬**
-valor nulo: **NULL**
+## Comentarios
+- Sintaxis: `// Comentario`
 
-*Expresiones matemáticas:*
-Suma: **+**
-Resta: **-**
-Multiplicación: **asterisco "*"**
-division: **/**
-modulo/resto de una division: **mod**
-potencia: **^**
+## Expresiones booleanas
+- Mayor que: `>`
+- Menor que: `<`
+- Mayor o igual que: `>=`
+- Menor o igual que: `<=`
+- Igualdad: `=`
+- Desigualdad: `!=`
+- AND: `^`
+- OR: `v`
+- NOT: `¬`
+- Valor nulo: `NULL`
 
-*Tipos de datos:*
+## Expresiones matemáticas
+- Suma: `+`
+- Resta: `-`
+- Multiplicación: `*`
+- División: `/`
+- Módulo (resto): `mod`
+- Potencia: `^`
 
-entero: **int**
-flotante: **float**
-cadena de texto: **string**
-caracter: **char**
-arreglo: **array[range] of** `Tipo`
-matriz: **array[rangoFilas][rangoColumnas] of `Tipo`**
-Clase de elemento generico: **Clase`<Element>`**
-Punteros:
-**pointer to `Clase/Tipo`**
+## Tipos de datos
+- Entero: `int`
+- Flotante: `float`
+- Cadena: `string`
+- Carácter: `char`
+- Arreglo: `array[rango] of Tipo`
+- Matriz: `array[rangoFilas][rangoColumnas] of Tipo`
+- Clase genérica: `Clase<Element>`
+- Punteros: `pointer to Clase/Tipo`
 
-*Declaración:*
-`Tipo`: ``Variable``
-ej: 
-`int: valor1`,
-`float: valor2`,
-`string: cadena1`,
-`Lista<Element>: result`,
-`array[1..N] of int: valores`
-`pointer to int: punteroEntero`
+## Declaración
+- Forma general: `Tipo: variable`
 
-Para parametros de una funcion:
-entrada por valor: **Tipo: Variable**
-entrada por referencia: **Ref Tipo: Variable**
+Ejemplos:
+- `int: valor1`
+- `float: valor2`
+- `string: cadena1`
+- `Lista<Element>: result`
+- `array[1..N] of int: valores`
+- `pointer to int: punteroEntero`
 
+Parámetros:
+- Entrada por valor: `Tipo: variable`
+- Entrada por referencia: `Ref Tipo: variable`
 
-*Condicional simple:*
-if **condicion** then
-    `bloque1`
+## Estructuras de control
+
+### Condicional simple
+```Pseudocodigo
+if condicion then
+  bloque
 endif
-  
-*Condicional anidado:*
-if **condición** then
-    `bloque1`
-else
-    `bloque2`
-endif
-
-*Ciclos:*
-for `Variable`<─ `valor` to `valor final` do
-    `bloque1`
-endfor
-  
-while **condicion** do
-    `bloque`
-endwhile
-
-do
-    `bloque`
-while **condicion**
-
-*Funciones y procedimientos:*
-func **Nombre de la funcion**(**parametros**):**salida**
-    Var
-        `bloque de declaracion de variables`
-    Begin
-        `bloque de funcion`
-        return `variable`
-endfunc
-
-proc **Nombre de la funcion**(**parametros**)
-    Var
-        `bloque de declaracion de variables`
-    Begin
-        `bloque de funcion`
-endfunc
-
-*Llamada de funciones:* `nombre funcion`(**parametros de entrada**)
-
-*Llamada de metodos:* `nombre objeto`.`nombre funcion`(**parametros de entrada**)
-*Desreferencia de un punter:* `nombrePuntero`->`metodo`
-
-*Creacion de memoria:* para crear nodos se usa la funcion `new` que devuelve el puntero del espacio en memoria, se utiliza ese puntero para insertarle la informacion usando setters
-
-ej: creación de un nodo en algún método de la clase lista (revisar referencia) [[Clases LPC Algoritmos]]
 ```
+
+### Condicional anidado
+```Pseudocodigo
+if condicion then
+  bloque1
+else
+  bloque2
+endif
+```
+
+### Ciclos
+```Pseudocodigo
+for i <─ inicio to fin do
+  bloque
+endfor
+```
+
+```Pseudocodigo
+while condicion do
+  bloque
+endwhile
+```
+
+```Pseudocodigo
+do
+  bloque
+while condicion
+```
+
+## Funciones y procedimientos
+
+### Función
+```Pseudocodigo
+func NombreFuncion(parametros): TipoSalida
+  Var
+    bloqueVariables
+  Begin
+    bloqueCodigo
+    return valor
+endfunc
+```
+
+### Procedimiento
+```Pseudocodigo
+proc NombreProcedimiento(parametros)
+  Var
+    bloqueVariables
+  Begin
+    bloqueCodigo
+endproc
+```
+
+## Llamadas
+- Llamada de función: `nombreFuncion(parametros)`
+- Llamada de método: `objeto.metodo(parametros)`
+- Desreferencia de puntero: `puntero->metodo()`
+
+## Creación de memoria (nodos)
+Para crear nodos se usa `new`, que devuelve un puntero al espacio en memoria.
+
+Ejemplo (ver también [[Clases LPC Algoritmos]]):
+```Pseudocodigo
 Var
   Element: e
   pointer to Nodo<Element>: pointerNew
 Begin
-  pointerNew <- new(Nodo<Element>)
-  pointerNew->.setInfo(e)
+  pointerNew <─ new(Nodo<Element>)
+  pointerNew->setInfo(e)
 ```
 
-*Declaracion de Clases:* Los metodos se declaran unicamente en la clase, la implementación se hace afuera.
-Class `Nombre Clase`
-    Attributes:
-        **nivel de acceso**:
-            `bloque de declaracion de atributos/variables`
-    Methods:
-        **nivel de acceso**:
-            `bloque de declaracion de metodos`
-endclass
+## Declaración de clases
+Los métodos se declaran en la clase y se implementan afuera.
 
-*Implementacion de metodos de clases:*
-func/proc `Nombre Clase`::`Nombre Funcion`(`Parametros`)**salida si es funcion**
-    Var
-        `bloque variables`
-    Begin
-        `bloque codigo`
-endfunc/proc
+```Pseudocodigo
+Class NombreClase
+  Attributes:
+    NivelAcceso:
+      bloqueAtributos
+  Methods:
+    NivelAcceso:
+      bloqueMetodos
+endclass
+```
+
+## Implementación de métodos de clase
+```Pseudocodigo
+func/proc NombreClase::NombreMetodo(parametros)[:TipoSalida]
+  Var
+    bloqueVariables
+  Begin
+    bloqueCodigo
+endfunc/endproc
+```

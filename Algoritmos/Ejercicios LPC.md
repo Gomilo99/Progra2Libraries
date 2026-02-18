@@ -284,6 +284,58 @@ Private proc Lista<int>::insertar(pointer to Nodo<int>: p, int: i)
 		endif
 endproc
 ```
+**Ejercicio 2**
+Dada una lista de números enteros, escriba la función:
+``func longestZigZagSublist(Lista<int>: target): int``
+Que reciba una lista de enteros target y devuelva la longitud de la sublista contigua más larga donde los números sigan un patrón de zig-zag, es decir, los elementos deben alternar entre ser mayores y menores que el elemento anterior. La sublista debe ser contigua. Ejemplo:
+Entrada: [1, 3, 2, 4, 3, 5, 5, 2]
+Salida: 6
+```
+func longestZigZagSublist(List<int>: target): int
+	Var
+		int: counter, actual, ant2, ant1, max
+	Begin
+		if ¬target.getLong() < 3 then
+			return 0
+		endif
+		max <─ 0
+		counter <─ 0
+		ant2 <─ target.consultar(1)
+		target.eliminar(1)
+		ant1 <─ target.consultar(1)
+		target.eliminar(1)
+
+		while ¬target.esVacia() do
+			actual <─ target.consultar(1)
+			target.eliminar(1)
+
+			if (ant2 < ant1 ^ ant1 > actual) v (ant2 > ant1 ^ ant1 < actual) then
+				counter <─ counter +1
+			else
+				if max < counter then
+					max <─ counter
+				endif
+				counter <─ 0
+			endif
+			ant2 <─ ant1
+			ant1 <─ actual
+		endwhile
+		if max < counter then
+			max <─ counter
+		endif
+		
+		return max +2
+endfunc
+```
+
+### Consideraciones clave ("conchas de mango")
+- `counter` no cuenta elementos de la sublista; cuenta cuántas **ternas consecutivas** cumplen zigzag: `(ant2, ant1, actual)`.
+- Si una sublista tiene longitud `L`, la cantidad de ternas consecutivas dentro de ella es `L - 2`.
+	- una terna es un grupo de 3 elementos consecutivos. `(ant2, ant1, actual)`
+- Por eso, cuando el mejor conteo de ternas es `max`, la longitud real de la sublista es `max + 2`.
+- Esto **no** devuelve “cantidad de zigzags” como evento aislado, sino la **longitud** pedida por el enunciado.
+- `max` puede iniciar en `0` porque representa una cantidad de patrones/longitud parcial, que nunca es negativa.
+- No hace falta `-inf`: ese valor se usa al buscar máximos de datos que podrían ser negativos; aquí no estamos maximizando valores de la lista.
 
 **Ejercicio 3**
 Dada una lista de números enteros, escriba la función:
@@ -429,7 +481,6 @@ Que reciba una lista de enteros target y devuelva la longitud de la sublista con
 Entrada: [1, 3, 2, 4, 3, 5, 5, 2]
 Salida: 6
 ```
-
 ```
 
 **Ejercicio 3**
