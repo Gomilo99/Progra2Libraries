@@ -1,0 +1,25 @@
+# Makefile genérico para un solo ejercicio C++
+
+CXX := g++
+CXXFLAGS := -std=c++17 -O2 -Wall -Wextra -Wpedantic
+INCLUDES := -Iinclude
+SRC_DIR := ejercicios
+BIN_DIR := bin
+
+EX ?= 02_sorted_intersect
+SRC := $(SRC_DIR)/$(EX).cpp
+OUT := $(BIN_DIR)/$(EX)
+
+.PHONY: all build run clean
+
+all: build
+
+build:
+	@mkdir -p $(BIN_DIR)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $(SRC) -o $(OUT)
+
+run: build
+	./$(OUT)
+
+clean:
+	rm -rf $(BIN_DIR)
