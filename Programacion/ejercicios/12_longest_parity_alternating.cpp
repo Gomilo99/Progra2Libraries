@@ -1,11 +1,14 @@
 #include <iostream>
 #include "../include/Ejercicios.hpp"
 
+using namespace std;
+
 int main() {
-    Lista<int> target = Lista<int>::fromVector({1, 3, 2, 4, 3, 5, 5, 2});
+    int data[] = {1, 3, 2, 4, 3, 5, 5, 2};
+    Lista<int> target;
+    for (int i = 0; i < 8; ++i) target.insertar(data[i], target.getLong() + 1);
     int result = longestParityAlternatingSublist(target);
 
-    std::cout << "longestParityAlternatingSublist: " << result << "\n";
-    // Salida esperada: 2
+    cout << "longestParityAlternatingSublist: " << result << "  // Esperada: 2\n";
     return 0;
 }

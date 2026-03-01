@@ -96,5 +96,5 @@ Si no tienes `make`, instala:
 
 - Mantén binarios fuera de `src` (`bin/`).
 - Activa warnings (`-Wall -Wextra -Wpedantic`).
-- Usa estándar fijo (`-std=c++17`).
+- Usa estándar fijo (`-std=c++98`).
 - Separa código reusable en `include/`.

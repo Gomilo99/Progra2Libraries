@@ -1,16 +1,19 @@
 #include <iostream>
 #include "../include/Ejercicios.hpp"
 
-int main() {
-    Lista<int> l = Lista<int>::fromVector({1, 1, 1, 3, 3, 3, 5, 5});
-    Lista<Lista<int>> result = compact(l);
+using namespace std;
 
-    std::cout << "compact: [";
+int main() {
+    int data[] = {1, 1, 1, 3, 3, 3, 5, 5};
+    Lista<int> l;
+    for (int i = 0; i < 8; ++i) l.insertar(data[i], l.getLong() + 1);
+    Lista<Lista<int> > result = compact(l);
+
+    cout << "compact: [";
     for (int i = 1; i <= result.getLong(); ++i) {
-        std::cout << result.consultar(i);
-        if (i < result.getLong()) std::cout << ", ";
+        cout << result.consultar(i);
+        if (i < result.getLong()) cout << ", ";
     }
-    std::cout << "]\n";
-    // Salida esperada: [[1, 3], [3, 3], [5, 2]]
+    cout << "]  // Esperada: [[1, 3], [3, 3], [5, 2]]\n";
     return 0;
 }

@@ -6,6 +6,8 @@
 #include <vector>
 #include "Nodo.hpp"
 
+using namespace std;
+
 template <typename T>
 class Lista {
 private:
@@ -14,10 +16,10 @@ private:
     int length;
 
 public:
-    Lista() : head(nullptr), tail(nullptr), length(0) {}
+    Lista() : head(NULL), tail(NULL), length(0) {}
 
-    Lista(const Lista<T>& other) : head(nullptr), tail(nullptr), length(0) {
-        Nodo<T>* current = other.head;
+    Lista(const Lista<T>& other) : head(NULL), tail(NULL), length(0) {
+        Nodo<T> *current = other.head;
         while (current) {
             insertar(current->getInfo(), length + 1);
             current = current->getNext();
@@ -29,7 +31,7 @@ public:
             return *this;
         }
         vaciar();
-        Nodo<T>* current = other.head;
+        Nodo<T> *current = other.head;
         while (current) {
             insertar(current->getInfo(), length + 1);
             current = current->getNext();
@@ -49,12 +51,32 @@ public:
         return length == 0;
     }
 
-    void insertar(const T& element, int pos) {
-        if (pos < 1 || pos > length + 1) {
-            throw std::out_of_range("Posicion invalida en insertar");
+    T consultar(int pos) const {
+        if (pos < 1 || pos > length) {
+            throw out_of_range("Posicion invalida en consultar");
         }
 
-        Nodo<T>* newNode = new Nodo<T>(element);
+        if (pos == 1) {
+            return head->getInfo();
+        }
+
+        if (pos == length) {
+            return tail->getInfo();
+        }
+
+        Nodo<T> *current = head;
+        for (int i = 1; i < pos; ++i) {
+            current = current->getNext();
+        }
+        return current->getInfo();
+    }
+
+    void insertar(const T& element, int pos) {
+        if (pos < 1 || pos > length + 1) {
+            throw out_of_range("Posicion invalida en insertar");
+        }
+
+        Nodo<T> *newNode = new Nodo<T>(element);
 
         if (length == 0) {
             head = newNode;
@@ -77,7 +99,7 @@ public:
             return;
         }
 
-        Nodo<T>* prev = head;
+        Nodo<T> *prev = head;
         for (int i = 1; i < pos - 1; ++i) {
             prev = prev->getNext();
         }
@@ -87,41 +109,21 @@ public:
         ++length;
     }
 
-    T consultar(int pos) const {
-        if (pos < 1 || pos > length) {
-            throw std::out_of_range("Posicion invalida en consultar");
-        }
-
-        if (pos == 1) {
-            return head->getInfo();
-        }
-
-        if (pos == length) {
-            return tail->getInfo();
-        }
-
-        Nodo<T>* current = head;
-        for (int i = 1; i < pos; ++i) {
-            current = current->getNext();
-        }
-        return current->getInfo();
-    }
-
     void eliminar(int pos) {
         if (pos < 1 || pos > length) {
-            throw std::out_of_range("Posicion invalida en eliminar");
+            throw out_of_range("Posicion invalida en eliminar");
         }
 
         if (length == 1) {
             delete head;
-            head = nullptr;
-            tail = nullptr;
+            head = NULL;
+            tail = NULL;
             length = 0;
             return;
         }
 
         if (pos == 1) {
-            Nodo<T>* toDelete = head;
+            Nodo<T> *toDelete = head;
             head = head->getNext();
             delete toDelete;
             --length;
@@ -129,30 +131,30 @@ public:
         }
 
         if (pos == length) {
-            Nodo<T>* prev = head;
+            Nodo<T> *prev = head;
             while (prev->getNext() != tail) {
                 prev = prev->getNext();
             }
             delete tail;
             tail = prev;
-            tail->setNext(nullptr);
+            tail->setNext(NULL);
             --length;
             return;
         }
 
-        Nodo<T>* prev = head;
+        Nodo<T> *prev = head;
         for (int i = 1; i < pos - 1; ++i) {
             prev = prev->getNext();
         }
 
-        Nodo<T>* toDelete = prev->getNext();
+        Nodo<T> *toDelete = prev->getNext();
         prev->setNext(toDelete->getNext());
         delete toDelete;
         --length;
     }
 
     int buscar(const T& element) const {
-        Nodo<T>* current = head;
+        Nodo<T> *current = head;
         int pos = 1;
         while (current) {
             if (current->getInfo() == element) {
@@ -165,12 +167,12 @@ public:
     }
 
     void invertir() {
-        Nodo<T>* prev = nullptr;
+        Nodo<T>* prev = NULL;
         Nodo<T>* current = head;
         tail = head;
 
         while (current) {
-            Nodo<T>* nextNode = current->getNext();
+            Nodo<T> *nextNode = current->getNext();
             current->setNext(prev);
             prev = current;
             current = nextNode;
@@ -190,23 +192,9 @@ public:
             delete current;
             current = nextNode;
         }
-        head = nullptr;
-        tail = nullptr;
+        head = NULL;
+        tail = NULL;
         length = 0;
-    }
-
-    void intercambiar(int pos1, int pos2) {
-        if (pos1 < 1 || pos1 > length || pos2 < 1 || pos2 > length) {
-            throw std::out_of_range("Posicion invalida en intercambiar");
-        }
-        if (pos1 == pos2) {
-            return;
-        }
-
-        T a = consultar(pos1);
-        T b = consultar(pos2);
-        modificar(pos1, b);
-        modificar(pos2, a);
     }
 
     Lista<T> concatenar(const Lista<T>& target) const {
@@ -223,9 +211,23 @@ public:
         vaciar();
     }
 
+    void intercambiar(int pos1, int pos2) {
+        if (pos1 < 1 || pos1 > length || pos2 < 1 || pos2 > length) {
+            throw out_of_range("Posicion invalida en intercambiar");
+        }
+        if (pos1 == pos2) {
+            return;
+        }
+
+        T a = consultar(pos1);
+        T b = consultar(pos2);
+        modificar(pos1, b);
+        modificar(pos2, a);
+    }
+
     void modificar(int pos, const T& element) {
         if (pos < 1 || pos > length) {
-            throw std::out_of_range("Posicion invalida en modificar");
+            throw out_of_range("Posicion invalida en modificar");
         }
 
         if (pos == 1) {
@@ -245,7 +247,7 @@ public:
         current->setInfo(element);
     }
 
-    void print(std::ostream& os = std::cout) const {
+    void print(ostream& os = cout) const {
         os << "[";
         Nodo<T>* current = head;
         while (current) {
@@ -258,10 +260,10 @@ public:
         os << "]";
     }
 
-    std::vector<T> toVector() const {
-        std::vector<T> values;
+    vector<T> toVector() const {
+        vector<T> values;
         values.reserve(length);
-        Nodo<T>* current = head;
+        Nodo<T> *current = head;
         while (current) {
             values.push_back(current->getInfo());
             current = current->getNext();
@@ -269,10 +271,10 @@ public:
         return values;
     }
 
-    static Lista<T> fromVector(const std::vector<T>& values) {
+    static Lista<T> fromVector(const vector<T>& values) {
         Lista<T> result;
-        for (const auto& value : values) {
-            result.insertar(value, result.getLong() + 1);
+        for (size_t i = 0; i < values.size(); ++i) {
+            result.insertar(values[i], result.getLong() + 1);
         }
         return result;
     }
@@ -329,7 +331,7 @@ public:
         }
 
         head = newTail->getNext();
-        newTail->setNext(nullptr);
+        newTail->setNext(NULL);
         tail = newTail;
     }
 
@@ -404,10 +406,14 @@ public:
 
         return result;
     }
+
+    void printLista(ostream& os = cout) const {
+        print(os);
+    }
 };
 
 template <typename T>
-std::ostream& operator<<(std::ostream& os, const Lista<T>& list) {
+ostream& operator<<(ostream& os, const Lista<T>& list) {
     list.print(os);
     return os;
 }

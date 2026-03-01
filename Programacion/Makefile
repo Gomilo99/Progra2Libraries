@@ -1,7 +1,7 @@
 # Makefile aplicado para todos los ejercicios del proyecto
 
 CXX := g++
-CXXFLAGS := -std=c++17 -O2 -Wall -Wextra -Wpedantic
+CXXFLAGS := -std=c++98 -O2 -Wall -Wextra -Wpedantic
 INCLUDES := -Iinclude
 SRC_DIR := ejercicios
 BIN_DIR := bin

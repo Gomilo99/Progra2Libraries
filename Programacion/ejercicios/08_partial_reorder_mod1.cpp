@@ -1,11 +1,14 @@
 #include <iostream>
 #include "../include/Lista.hpp"
 
+using namespace std;
+
 int main() {
-    Lista<int> l = Lista<int>::fromVector({1, 2, 3, 4, 5, 6});
+    int data[] = {1, 2, 3, 4, 5, 6};
+    Lista<int> l;
+    for (int i = 0; i < 6; ++i) l.insertar(data[i], l.getLong() + 1);
     Lista<int> result = l.partialReorderOddEvenSorted();
 
-    std::cout << "partialReorder mod1: " << result << "\n";
-    // Salida esperada: [1, 2, 3, 4, 5, 6]
+    cout << "partialReorderOddEvenSorted: " << result << "  // Esperada: [1, 2, 3, 4, 5, 6]\n";
     return 0;
 }

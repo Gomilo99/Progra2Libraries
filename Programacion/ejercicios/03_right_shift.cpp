@@ -1,12 +1,15 @@
 #include <iostream>
+#include <vector>
 #include "../include/Lista.hpp"
 
+using namespace std;
+
 int main() {
-    Lista<int> l = Lista<int>::fromVector({1, 2, 3, 4, 5});
+    vector<int> data = {1, 2, 3, 4, 5};
+    Lista<int> result = Lista<int>::fromVector(data);
 
-    l.rightShift(2);
+    result.rightShift(2);
 
-    std::cout << "rightShift(2): " << l << "\n";
-    // Salida esperada: [4, 5, 1, 2, 3]
+    cout << "rightShift(2): " << result << "  // Esperada: [4, 5, 1, 2, 3]\n";
     return 0;
 }

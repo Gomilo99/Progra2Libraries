@@ -1,15 +1,18 @@
 #include <iostream>
 #include "../include/Lista.hpp"
 
+using namespace std;
+
 int main() {
     Lista<int> l;
-    for (int v : {1, 2, 3, 4, 5, 6, 7}) {
-        l.insertar(v, l.getLong() + 1);
+    int data[] = {1, 2, 3, 4, 5, 6, 7};
+    int n = sizeof(data) / sizeof(data[0]);
+    for (int i = 0; i < n; ++i) {
+        l.insertar(data[i], l.getLong() + 1);
     }
 
     l.reorderOddAndEven();
 
-    std::cout << "Resultado reorderOddAndEven: " << l << "\n";
-    // Salida esperada: [1, 3, 5, 7, 2, 4, 6]
+    cout << "reorderOddAndEven: " << l << "  // Esperada: [1, 3, 5, 7, 2, 4, 6]\n";
     return 0;
 }

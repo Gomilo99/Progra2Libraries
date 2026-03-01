@@ -5,6 +5,8 @@
 #include <stdexcept>
 #include "Nodo.hpp"
 
+using namespace std;
+
 template <typename T>
 class Cola {
 private:
@@ -13,9 +15,9 @@ private:
     int length;
 
 public:
-    Cola() : frente(nullptr), ultimo(nullptr), length(0) {}
+    Cola() : frente(NULL), ultimo(NULL), length(0) {}
 
-    Cola(const Cola<T>& other) : frente(nullptr), ultimo(nullptr), length(0) {
+    Cola(const Cola<T>& other) : frente(NULL), ultimo(NULL), length(0) {
         Nodo<T>* current = other.frente;
         while (current) {
             encolar(current->getInfo());
@@ -42,14 +44,14 @@ public:
 
     T getFrente() const {
         if (esVacia()) {
-            throw std::out_of_range("Cola vacia");
+            throw out_of_range("Cola vacia");
         }
         return frente->getInfo();
     }
 
     T getUltimo() const {
         if (esVacia()) {
-            throw std::out_of_range("Cola vacia");
+            throw out_of_range("Cola vacia");
         }
         return ultimo->getInfo();
     }
@@ -76,7 +78,7 @@ public:
 
     void desencolar() {
         if (esVacia()) {
-            throw std::out_of_range("Cola vacia");
+            throw out_of_range("Cola vacia");
         }
 
         Nodo<T>* toDelete = frente;
@@ -85,7 +87,7 @@ public:
         --length;
 
         if (length == 0) {
-            ultimo = nullptr;
+            ultimo = NULL;
         }
     }
 
@@ -96,14 +98,14 @@ public:
             delete toDelete;
             --length;
         }
-        ultimo = nullptr;
+        ultimo = NULL;
     }
 
     void destruir() {
         vaciar();
     }
 
-    void print(std::ostream& os = std::cout) const {
+    void print(ostream& os = cout) const {
         os << "[";
         Nodo<T>* current = frente;
         while (current) {
@@ -115,10 +117,14 @@ public:
         }
         os << "]";
     }
+
+    void printCola(ostream& os = cout) const {
+        print(os);
+    }
 };
 
 template <typename T>
-std::ostream& operator<<(std::ostream& os, const Cola<T>& queue) {
+ostream& operator<<(ostream& os, const Cola<T>& queue) {
     queue.print(os);
     return os;
 }

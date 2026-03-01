@@ -1,6 +1,8 @@
 #ifndef NODO_HPP
 #define NODO_HPP
 
+using namespace std;
+
 template <typename T>
 class Nodo {
 private:
@@ -8,7 +10,7 @@ private:
     Nodo<T>* next;
 
 public:
-    Nodo(const T& value, Nodo<T>* nextNode = nullptr) : info(value), next(nextNode) {}
+    Nodo(const T& value, Nodo<T>* nextNode = NULL) : info(value), next(nextNode) {}
 
     const T& getInfo() const { return info; }
     void setInfo(const T& value) { info = value; }

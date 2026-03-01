@@ -1,11 +1,14 @@
 #include <iostream>
 #include "../include/Ejercicios.hpp"
 
+using namespace std;
+
 int main() {
-    Lista<float> target = Lista<float>::fromVector({1, 2, 3, 4, 5});
+    float data[] = {1, 2, 3, 4, 5};
+    Lista<float> target;
+    for (int i = 0; i < 5; ++i) target.insertar(data[i], target.getLong() + 1);
     Lista<float> result = mediaMovil(target, 3);
 
-    std::cout << "mediaMovil(window=3): " << result << "\n";
-    // Salida esperada aproximada: [2, 3, 4]
+    cout << "mediaMovil: " << result << "  // Esperada aprox: [2, 3, 4]\n";
     return 0;
 }

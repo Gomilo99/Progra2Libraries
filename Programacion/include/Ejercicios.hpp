@@ -6,6 +6,8 @@
 #include "Lista.hpp"
 #include "Cola.hpp"
 
+using namespace std;
+
 inline Lista<int> sortedIntersect(Lista<int> a, Lista<int> b) {
     Lista<int> result;
     while (!a.esVacia() && !b.esVacia()) {
@@ -25,8 +27,8 @@ inline Lista<int> sortedIntersect(Lista<int> a, Lista<int> b) {
     return result;
 }
 
-inline Lista<Lista<int>> compact(Lista<int> target) {
-    Lista<Lista<int>> result;
+inline Lista<Lista<int> > compact(Lista<int> target) {
+    Lista<Lista<int> > result;
     if (target.esVacia()) {
         return result;
     }
@@ -58,7 +60,7 @@ inline Lista<Lista<int>> compact(Lista<int> target) {
     return result;
 }
 
-inline Lista<int> expand(Lista<Lista<int>> target) {
+inline Lista<int> expand(Lista<Lista<int> > target) {
     Lista<int> result;
 
     while (!target.esVacia()) {
@@ -78,7 +80,7 @@ inline Lista<int> expand(Lista<Lista<int>> target) {
 
 inline Lista<float> mediaMovil(Lista<float> target, int window) {
     if (window <= 0) {
-        throw std::invalid_argument("window debe ser positivo");
+        throw invalid_argument("window debe ser positivo");
     }
 
     Lista<float> result;
@@ -107,7 +109,7 @@ inline Lista<float> mediaMovil(Lista<float> target, int window) {
 
 inline Lista<float> rollingStandardDeviation(Lista<float> target, int window) {
     if (window <= 0) {
-        throw std::invalid_argument("window debe ser positivo");
+        throw invalid_argument("window debe ser positivo");
     }
 
     Lista<float> result;
@@ -136,7 +138,7 @@ inline Lista<float> rollingStandardDeviation(Lista<float> target, int window) {
             if (varianza < 0.0f) {
                 varianza = 0.0f;
             }
-            result.insertar(std::sqrt(varianza), result.getLong() + 1);
+            result.insertar(sqrt(varianza), result.getLong() + 1);
         }
     }
 
@@ -272,6 +274,14 @@ inline Lista<int> trendChangesInWindows(Lista<int> target, int k) {
         return result;
     }
 
+    if (k == 2) {
+        int total = target.getLong() - k + 1;
+        for (int i = 0; i < total; ++i) {
+            result.insertar(0, result.getLong() + 1);
+        }
+        return result;
+    }
+
     Cola<int> window;
     Cola<int> signos;
     int counter = 0;
@@ -305,12 +315,16 @@ inline Lista<int> trendChangesInWindows(Lista<int> target, int k) {
     while (!target.esVacia()) {
         window.desencolar();
 
-        int s1 = signos.getFrente();
-        signos.desencolar();
-        int s2 = signos.getFrente();
+        if (signos.getLong() >= 2) {
+            int s1 = signos.getFrente();
+            signos.desencolar();
+            int s2 = signos.getFrente();
 
-        if ((s1 == 1 && s2 == -1) || (s1 == -1 && s2 == 1)) {
-            --counter;
+            if ((s1 == 1 && s2 == -1) || (s1 == -1 && s2 == 1)) {
+                --counter;
+            }
+        } else if (!signos.esVacia()) {
+            signos.desencolar();
         }
 
         int actual = target.consultar(1);
@@ -323,9 +337,11 @@ inline Lista<int> trendChangesInWindows(Lista<int> target, int k) {
             signoActual = -1;
         }
 
-        s1 = signos.getUltimo();
-        if ((s1 == 1 && signoActual == -1) || (s1 == -1 && signoActual == 1)) {
-            ++counter;
+        if (!signos.esVacia()) {
+            int s1 = signos.getUltimo();
+            if ((s1 == 1 && signoActual == -1) || (s1 == -1 && signoActual == 1)) {
+                ++counter;
+            }
         }
 
         signos.encolar(signoActual);

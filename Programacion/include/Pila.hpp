@@ -5,6 +5,8 @@
 #include <stdexcept>
 #include "Nodo.hpp"
 
+using namespace std;
+
 template <typename T>
 class Pila {
 private:
@@ -12,10 +14,10 @@ private:
     int length;
 
 public:
-    Pila() : tope(nullptr), length(0) {}
+    Pila() : tope(NULL), length(0) {}
 
-    Pila(const Pila<T>& other) : tope(nullptr), length(0) {
-        if (other.tope == nullptr) {
+    Pila(const Pila<T>& other) : tope(NULL), length(0) {
+        if (other.tope == NULL) {
             return;
         }
 
@@ -43,7 +45,7 @@ public:
 
         vaciar();
 
-        if (other.tope == nullptr) {
+        if (other.tope == NULL) {
             return *this;
         }
 
@@ -75,7 +77,7 @@ public:
 
     T getTope() const {
         if (esVacia()) {
-            throw std::out_of_range("Pila vacia");
+            throw out_of_range("Pila vacia");
         }
         return tope->getInfo();
     }
@@ -92,7 +94,7 @@ public:
 
     void desapilar() {
         if (esVacia()) {
-            throw std::out_of_range("Pila vacia");
+            throw out_of_range("Pila vacia");
         }
 
         Nodo<T>* toDelete = tope;
@@ -114,7 +116,7 @@ public:
         vaciar();
     }
 
-    void print(std::ostream& os = std::cout) const {
+    void print(ostream& os = cout) const {
         os << "[";
         Nodo<T>* current = tope;
         while (current) {
@@ -126,10 +128,14 @@ public:
         }
         os << "]";
     }
+
+    void printPila(ostream& os = cout) const {
+        print(os);
+    }
 };
 
 template <typename T>
-std::ostream& operator<<(std::ostream& os, const Pila<T>& stack) {
+ostream& operator<<(ostream& os, const Pila<T>& stack) {
     stack.print(os);
     return os;
 }

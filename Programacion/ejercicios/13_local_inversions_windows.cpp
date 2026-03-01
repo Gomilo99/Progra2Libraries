@@ -1,11 +1,14 @@
 #include <iostream>
 #include "../include/Ejercicios.hpp"
 
+using namespace std;
+
 int main() {
-    Lista<int> target = Lista<int>::fromVector({4, 3, 2, 1, 2, 3});
+    int data[] = {4, 3, 2, 1, 2, 3};
+    Lista<int> target;
+    for (int i = 0; i < 6; ++i) target.insertar(data[i], target.getLong() + 1);
     Lista<int> result = localInversionsInWindows(target, 4);
 
-    std::cout << "localInversionsInWindows(k=4): " << result << "\n";
-    // Salida esperada: [3, 2, 1]
+    cout << "localInversionsInWindows: " << result << "  // Esperada: [3, 2, 1]\n";
     return 0;
 }
