@@ -1,0 +1,128 @@
+[alvaro espinoza, tobias, lord Hansell Campbell, mariana]
+[1, 2, 3, 4]
+Posición a eliminar (1-based): 4 (id original=4)
+Nombre a eliminar: mariana
+Estado nombres tras invertir: [lord Hansell Campbell, tobias, alvaro espinoza]
+Estado indices tras invertir: [3, 2, 1]
+Estado nombres: [lord Hansell Campbell, tobias, alvaro espinoza]
+Estado indices: [3, 2, 1]
+Posición a eliminar (1-based): 2 (id original=2)
+Nombre a eliminar: tobias
+Estado nombres tras invertir: [alvaro espinoza, lord Hansell Campbell]
+Estado indices tras invertir: [1, 3]
+Estado nombres: [lord Hansell Campbell, alvaro espinoza]
+Estado indices: [3, 1]
+Posición a eliminar (1-based): 1 (id original=3)
+Nombre a eliminar: lord Hansell Campbell
+Estado nombres: [alvaro espinoza]
+Estado indices: [1]
+Ganador: alvaro espinoza
+-----------------------------
+[alvaro espinoza, jimmy hendrix, slash, steven tyler]
+[1, 2, 3, 4]
+Posición a eliminar (1-based): 2 (id original=2)
+Nombre a eliminar: jimmy hendrix
+Estado nombres tras invertir: [steven tyler, slash, alvaro espinoza]
+Estado indices tras invertir: [4, 3, 1]
+Estado nombres: [alvaro espinoza, steven tyler, slash]
+Estado indices: [1, 4, 3]
+Posición a eliminar (1-based): 3 (id original=3)
+Nombre a eliminar: slash
+Estado nombres tras invertir: [steven tyler, alvaro espinoza]
+Estado indices tras invertir: [4, 1]
+Estado nombres: [steven tyler, alvaro espinoza]
+Estado indices: [4, 1]
+Posición a eliminar (1-based): 2 (id original=1)
+Nombre a eliminar: alvaro espinoza
+Estado nombres: [steven tyler]
+Estado indices: [4]
+Ganador: steven tyler
+-----------------------------
+[Jesus Hernandez, Suchi suchi, Taichi takahashi, Artorias del abismo, Dark Souls, Final Fantasy, Pokemon, Elena Rose]
+[1, 2, 3, 4, 5, 6, 7, 8]
+Posición a eliminar (1-based): 5 (id original=5)
+Nombre a eliminar: Dark Souls
+Estado nombres tras invertir: [Elena Rose, Pokemon, Final Fantasy, Artorias del abismo, Taichi takahashi, Suchi suchi, Jesus Hernandez]
+Estado indices tras invertir: [8, 7, 6, 4, 3, 2, 1]
+Estado nombres: [Artorias del abismo, Taichi takahashi, Suchi suchi, Jesus Hernandez, Elena Rose, Pokemon, Final Fantasy]
+Estado indices: [4, 3, 2, 1, 8, 7, 6]
+Posición a eliminar (1-based): 2 (id original=3)
+Nombre a eliminar: Taichi takahashi
+Estado nombres tras invertir: [Final Fantasy, Pokemon, Elena Rose, Jesus Hernandez, Suchi suchi, Artorias del abismo]
+Estado indices tras invertir: [6, 7, 8, 1, 2, 4]
+Estado nombres: [Artorias del abismo, Final Fantasy, Pokemon, Elena Rose, Jesus Hernandez, Suchi suchi]
+Estado indices: [4, 6, 7, 8, 1, 2]
+Posición a eliminar (1-based): 2 (id original=6)
+Nombre a eliminar: Final Fantasy
+Estado nombres tras invertir: [Suchi suchi, Jesus Hernandez, Elena Rose, Pokemon, Artorias del abismo]
+Estado indices tras invertir: [2, 1, 8, 7, 4]
+Estado nombres: [Artorias del abismo, Suchi suchi, Jesus Hernandez, Elena Rose, Pokemon]
+Estado indices: [4, 2, 1, 8, 7]
+Posición a eliminar (1-based): 3 (id original=1)
+Nombre a eliminar: Jesus Hernandez
+Estado nombres tras invertir: [Pokemon, Elena Rose, Suchi suchi, Artorias del abismo]
+Estado indices tras invertir: [7, 8, 2, 4]
+Estado nombres: [Suchi suchi, Artorias del abismo, Pokemon, Elena Rose]
+Estado indices: [2, 4, 7, 8]
+Posición a eliminar (1-based): 2 (id original=4)
+Nombre a eliminar: Artorias del abismo
+Estado nombres tras invertir: [Elena Rose, Pokemon, Suchi suchi]
+Estado indices tras invertir: [8, 7, 2]
+Estado nombres: [Suchi suchi, Elena Rose, Pokemon]
+Estado indices: [2, 8, 7]
+Posición a eliminar (1-based): 3 (id original=7)
+Nombre a eliminar: Pokemon
+Estado nombres tras invertir: [Elena Rose, Suchi suchi]
+Estado indices tras invertir: [8, 2]
+Estado nombres: [Elena Rose, Suchi suchi]
+Estado indices: [8, 2]
+Posición a eliminar (1-based): 2 (id original=2)
+Nombre a eliminar: Suchi suchi
+Estado nombres: [Elena Rose]
+Estado indices: [8]
+Ganador: Elena Rose
+-----------------------------
+[Jesus Hernandez, Suchi suchi, Taichi takahashi, Artorias del abismo, Dark Souls, Final Fantasy, Pokemon, Elena Rose]
+[1, 2, 3, 4, 5, 6, 7, 8]
+Posición a eliminar (1-based): 1 (id original=1)
+Nombre a eliminar: Jesus Hernandez
+Estado nombres tras invertir: [Elena Rose, Pokemon, Final Fantasy, Dark Souls, Artorias del abismo, Taichi takahashi, Suchi suchi]
+Estado indices tras invertir: [8, 7, 6, 5, 4, 3, 2]
+Estado nombres: [Elena Rose, Pokemon, Final Fantasy, Dark Souls, Artorias del abismo, Taichi takahashi, Suchi suchi]
+Estado indices: [8, 7, 6, 5, 4, 3, 2]
+Posición a eliminar (1-based): 3 (id original=6)
+Nombre a eliminar: Final Fantasy
+Estado nombres tras invertir: [Suchi suchi, Taichi takahashi, Artorias del abismo, Dark Souls, Pokemon, Elena Rose]
+Estado indices tras invertir: [2, 3, 4, 5, 7, 8]
+Estado nombres: [Pokemon, Elena Rose, Suchi suchi, Taichi takahashi, Artorias del abismo, Dark Souls]
+Estado indices: [7, 8, 2, 3, 4, 5]
+Posición a eliminar (1-based): 2 (id original=8)
+Nombre a eliminar: Elena Rose
+Estado nombres tras invertir: [Dark Souls, Artorias del abismo, Taichi takahashi, Suchi suchi, Pokemon]
+Estado indices tras invertir: [5, 4, 3, 2, 7]
+Estado nombres: [Pokemon, Dark Souls, Artorias del abismo, Taichi takahashi, Suchi suchi]
+Estado indices: [7, 5, 4, 3, 2]
+Posición a eliminar (1-based): 2 (id original=5)
+Nombre a eliminar: Dark Souls
+Estado nombres tras invertir: [Suchi suchi, Taichi takahashi, Artorias del abismo, Pokemon]
+Estado indices tras invertir: [2, 3, 4, 7]
+Estado nombres: [Pokemon, Suchi suchi, Taichi takahashi, Artorias del abismo]
+Estado indices: [7, 2, 3, 4]
+Posición a eliminar (1-based): 3 (id original=3)
+Nombre a eliminar: Taichi takahashi
+Estado nombres tras invertir: [Artorias del abismo, Suchi suchi, Pokemon]
+Estado indices tras invertir: [4, 2, 7]
+Estado nombres: [Suchi suchi, Pokemon, Artorias del abismo]
+Estado indices: [2, 7, 4]
+Posición a eliminar (1-based): 3 (id original=4)
+Nombre a eliminar: Artorias del abismo
+Estado nombres tras invertir: [Pokemon, Suchi suchi]
+Estado indices tras invertir: [7, 2]
+Estado nombres: [Pokemon, Suchi suchi]
+Estado indices: [7, 2]
+Posición a eliminar (1-based): 2 (id original=2)
+Nombre a eliminar: Suchi suchi
+Estado nombres: [Pokemon]
+Estado indices: [7]
+Ganador: Pokemon
+-----------------------------

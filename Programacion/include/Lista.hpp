@@ -259,7 +259,12 @@ public:
         }
         os << "]";
     }
-
+    /*
+    void printLista(ostream& os = cout) const {
+        print(os);
+    }
+    */
+    
     vector<T> toVector() const {
         vector<T> values;
         values.reserve(length);
@@ -407,9 +412,6 @@ public:
         return result;
     }
 
-    void printLista(ostream& os = cout) const {
-        print(os);
-    }
 };
 
 template <typename T>

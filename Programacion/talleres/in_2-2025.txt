@@ -1,0 +1,9 @@
+4
+4 5 2
+“alvaro espinoza”, “tobias”, “lord Hansell Campbell”, “mariana”
+2 3 2
+“alvaro espinoza”, “jimmy hendrix”, “slash”, “steven tyler”
+5 3 2
+"Jesus Hernandez", "Suchi suchi", "Taichi takahashi", "Artorias del abismo", "Dark Souls", "Final Fantasy", "Pokemon", "Elena Rose"
+1 2 3
+"Jesus Hernandez", "Suchi suchi", "Taichi takahashi", "Artorias del abismo", "Dark Souls", "Final Fantasy", "Pokemon", "Elena Rose"
