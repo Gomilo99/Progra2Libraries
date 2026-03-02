@@ -1,0 +1,15 @@
+Caso 1: n=4, a=5, b=2
+alvaro espinoza
+tobias
+lord Hansell Campbell
+mariana
+Caso 2: n=2, a=3, b=2
+alvaro espinoza
+jimmy hendrix
+slash
+steven tyler
+Caso 3: n=5, a=3, b=2
+Jesus Hernandez
+Suchi suchi
+Taichi takahashi
+Artorias del abismo
