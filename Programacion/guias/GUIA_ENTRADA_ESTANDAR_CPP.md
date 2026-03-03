@@ -112,7 +112,178 @@ std::string contenido(
 
 Este patrón evita la mayoría de errores con espacios, comas y comillas.
 
-## 8) Entrada estandar de Taller 2-2025
+## 9) Funciones de `string` usadas en este código (con ejemplos)
+
+### `size()`
+- Devuelve la longitud del string.
+- Uso en el código: controlar límites en loops y accesos (`i < s.size()`).
+- Ejemplo:
+    ```cpp
+    string s = "hola";
+    size_t n = s.size(); // 4
+    ```
+
+### `operator[]`
+- Accede a un carácter por índice (sin chequeo de rango).
+- Uso en el código: leer `s[i]` y `s[i + 1]` en el parser CSV.
+- Ejemplo:
+    ```cpp
+    string s = "abc";
+    char c = s[1]; // 'b'
+    ```
+
+### `substr(pos, len)`
+- Extrae una subcadena desde `pos` con longitud `len`.
+- Uso en el código: `trim` devuelve solo la porción útil.
+- Ejemplo:
+    ```cpp
+    string s = "programacion";
+    string sub = s.substr(0, 4); // "prog"
+    ```
+
+### `find(sub, posInicial)`
+- Busca la primera ocurrencia de `sub` desde una posición inicial.
+- Devuelve `string::npos` si no encuentra.
+- Uso en el código: `replaceAll` itera todas las ocurrencias.
+- Ejemplo:
+    ```cpp
+    string s = "a,b,c";
+    size_t p = s.find(",", 0); // 1
+    ```
+
+### `replace(pos, len, nuevoTexto)`
+- Reemplaza una porción del string.
+- Uso en el código: convertir comillas UTF-8 a ASCII.
+- Ejemplo:
+    ```cpp
+    string s = "hola mundo";
+    s.replace(5, 5, "C++"); // "hola C++"
+    ```
+
+### `push_back(ch)`
+- Agrega un carácter al final.
+- Uso en el código: construir `current` carácter por carácter.
+- Ejemplo:
+    ```cpp
+    string s;
+    s.push_back('A'); // "A"
+    ```
+
+### `clear()`
+- Vacía el contenido del string.
+- Uso en el código: reiniciar el acumulador al cerrar un campo CSV.
+- Ejemplo:
+    ```cpp
+    string s = "dato";
+    s.clear(); // ""
+    ```
+
+### `string::npos`
+- Constante que indica “no encontrado”.
+- Uso en el código: condición de corte en `find` dentro de `replaceAll`.
+- Ejemplo:
+    ```cpp
+    if (s.find("x") == string::npos) {
+            // no existe "x"
+    }
+    ```
+
+## 10) Otras funciones de `string` útiles para parciales/talleres
+
+### `empty()`
+- Verifica si el string está vacío.
+    ```cpp
+    if (linea.empty()) { /* línea vacía */ }
+    ```
+
+### `compare()`
+- Compara strings de forma explícita.
+    ```cpp
+    if (a.compare(b) == 0) { /* iguales */ }
+    ```
+
+### `erase(pos, len)`
+- Elimina un tramo de caracteres.
+    ```cpp
+    string s = "abcXYZdef";
+    s.erase(3, 3); // "abcdef"
+    ```
+
+### `insert(pos, texto)`
+- Inserta texto en una posición.
+    ```cpp
+    string s = "ac";
+    s.insert(1, "b"); // "abc"
+    ```
+
+### `find_first_not_of(chars)` / `find_last_not_of(chars)`
+- Muy útiles para hacer variantes de `trim`.
+    ```cpp
+    string s = "   hola  ";
+    size_t ini = s.find_first_not_of(" \t\n\r");
+    size_t fin = s.find_last_not_of(" \t\n\r");
+    ```
+
+### `c_str()`
+- Obtiene un `const char*` cuando una API antigua lo pide.
+    ```cpp
+    const char* p = s.c_str();
+    ```
+
+### `getline(cin, s)` (de `<string>`)
+- Aunque no es método miembro, es clave para entradas complejas con espacios.
+    ```cpp
+    string linea;
+    getline(cin, linea);
+    ```
+
+## 11) Cómo evitar un salto de línea adicional al final de la salida
+
+En evaluadores automáticos, un `\n` extra al final puede hacer que la salida no coincida exactamente.
+
+### Problema típico
+
+Imprimir siempre `"\n"` en cada iteración:
+
+```cpp
+for (int i = 1; i <= nombres.getLong(); ++i) {
+    cout << nombres.consultar(i) << "\n";
+}
+```
+
+Eso deja una línea vacía extra al final del archivo si esa fue la última impresión global.
+
+### Patrón recomendado
+
+Imprimir el salto **antes** de cada línea excepto la primera línea total de salida:
+
+```cpp
+bool firstLine = true;
+
+if (!firstLine) cout << "\n";
+cout << "Caso " << caso << ": n=" << n << ", a=" << a << ", b=" << b;
+firstLine = false;
+
+for (int i = 1; i <= nombres.getLong(); ++i) {
+    cout << "\n" << nombres.consultar(i);
+}
+```
+o por ejemplo
+```cpp
+for (int i = 1; i <= n; ++i) {
+        if (i > 1) cout << "\n";
+        cout << "Caso " << i << "  K=" << listaK.consultar(i)
+            << "  Nombres=" << casosNombres.consultar(i);
+    }
+```
+
+### Regla práctica
+
+- Si el formato exige coincidencia exacta, evitá terminar la última línea con `\n`.
+- Preferí: separadores entre líneas (`"\n"` antes de imprimir la siguiente) en vez de `"\n"` al final de cada `cout`.
+- Verificá con redirección: `make run-file` y revisá el conteo de líneas esperado.
+
+## 12) Entrada estandar de Taller 2-2025
 2
 4 5 2
 “alvaro espinoza”, “tobias”, “lord Hansell Campbell”, “mariana”
@@ -329,166 +500,76 @@ int main() {
     return 0;
 }
 ```
+## 13) Entrada estandar de Taller 1-2025
+2
+3
+5
+judas juan
+iscariote simon
+jacobo natanael
+mateo felipe
+pedro santiago
+andres
+tomas
+jesus
+### Que hay que hacer?
+1. Leer `n`
+2. Leer los `n` valores `k`
+3. Inicializar `n` listas vacías de nombres
+4. Consumir el salto pendiente (ignore)
+5. Mientras haya líneas (getline hasta EOF), parsear cada línea con stringstream
+6. El primer token va a la lista 1, el segundo a la 2, etc.
 
-## 9) Funciones de `string` usadas en este código (con ejemplos)
+```cpp
+#include <iostream>
+#include <string>
+#include <sstream>
+#include <limits>
+#include "../include/Lista.hpp"
 
-### `size()`
-- Devuelve la longitud del string.
-- Uso en el código: controlar límites en loops y accesos (`i < s.size()`).
-- Ejemplo:
-    ```cpp
-    string s = "hola";
-    size_t n = s.size(); // 4
-    ```
+using namespace std;
 
-### `operator[]`
-- Accede a un carácter por índice (sin chequeo de rango).
-- Uso en el código: leer `s[i]` y `s[i + 1]` en el parser CSV.
-- Ejemplo:
-    ```cpp
-    string s = "abc";
-    char c = s[1]; // 'b'
-    ```
+int main() {
+    int n;
+    cin >> n;
 
-### `substr(pos, len)`
-- Extrae una subcadena desde `pos` con longitud `len`.
-- Uso en el código: `trim` devuelve solo la porción útil.
-- Ejemplo:
-    ```cpp
-    string s = "programacion";
-    string sub = s.substr(0, 4); // "prog"
-    ```
-
-### `find(sub, posInicial)`
-- Busca la primera ocurrencia de `sub` desde una posición inicial.
-- Devuelve `string::npos` si no encuentra.
-- Uso en el código: `replaceAll` itera todas las ocurrencias.
-- Ejemplo:
-    ```cpp
-    string s = "a,b,c";
-    size_t p = s.find(",", 0); // 1
-    ```
-
-### `replace(pos, len, nuevoTexto)`
-- Reemplaza una porción del string.
-- Uso en el código: convertir comillas UTF-8 a ASCII.
-- Ejemplo:
-    ```cpp
-    string s = "hola mundo";
-    s.replace(5, 5, "C++"); // "hola C++"
-    ```
-
-### `push_back(ch)`
-- Agrega un carácter al final.
-- Uso en el código: construir `current` carácter por carácter.
-- Ejemplo:
-    ```cpp
-    string s;
-    s.push_back('A'); // "A"
-    ```
-
-### `clear()`
-- Vacía el contenido del string.
-- Uso en el código: reiniciar el acumulador al cerrar un campo CSV.
-- Ejemplo:
-    ```cpp
-    string s = "dato";
-    s.clear(); // ""
-    ```
-
-### `string::npos`
-- Constante que indica “no encontrado”.
-- Uso en el código: condición de corte en `find` dentro de `replaceAll`.
-- Ejemplo:
-    ```cpp
-    if (s.find("x") == string::npos) {
-            // no existe "x"
+    Lista<int> listaK;
+    for (int i = 0; i < n; ++i) {
+        int k;
+        cin >> k;
+        listaK.insertar(k, listaK.getLong() + 1);
     }
-    ```
 
-## 10) Otras funciones de `string` útiles para parciales/talleres
+    Lista<Lista<string> > casosNombres;
+    for (int i = 0; i < n; ++i) {
+        Lista<string> vacia;
+        casosNombres.insertar(vacia, casosNombres.getLong() + 1);
+    }
 
-### `empty()`
-- Verifica si el string está vacío.
-    ```cpp
-    if (linea.empty()) { /* línea vacía */ }
-    ```
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
-### `compare()`
-- Compara strings de forma explícita.
-    ```cpp
-    if (a.compare(b) == 0) { /* iguales */ }
-    ```
-
-### `erase(pos, len)`
-- Elimina un tramo de caracteres.
-    ```cpp
-    string s = "abcXYZdef";
-    s.erase(3, 3); // "abcdef"
-    ```
-
-### `insert(pos, texto)`
-- Inserta texto en una posición.
-    ```cpp
-    string s = "ac";
-    s.insert(1, "b"); // "abc"
-    ```
-
-### `find_first_not_of(chars)` / `find_last_not_of(chars)`
-- Muy útiles para hacer variantes de `trim`.
-    ```cpp
-    string s = "   hola  ";
-    size_t ini = s.find_first_not_of(" \t\n\r");
-    size_t fin = s.find_last_not_of(" \t\n\r");
-    ```
-
-### `c_str()`
-- Obtiene un `const char*` cuando una API antigua lo pide.
-    ```cpp
-    const char* p = s.c_str();
-    ```
-
-### `getline(cin, s)` (de `<string>`)
-- Aunque no es método miembro, es clave para entradas complejas con espacios.
-    ```cpp
     string linea;
-    getline(cin, linea);
-    ```
+    while (getline(cin, linea)) {
+        if (linea.size() == 0) continue;
 
-## 11) Cómo evitar un salto de línea adicional al final de la salida
+        stringstream ss(linea);
+        string nombre;
+        int col = 1; // columna 1..n
 
-En evaluadores automáticos, un `\n` extra al final puede hacer que la salida no coincida exactamente.
+        while (ss >> nombre && col <= n) {
+            Lista<string> aux = casosNombres.consultar(col);
+            aux.insertar(nombre, aux.getLong() + 1);
+            casosNombres.modificar(col, aux);
+            ++col;
+        }
+    }
 
-### Problema típico
+    // Debug de verificación
+    for (int i = 1; i <= n; ++i) {
+        cout << "Caso " << i << "  K=" << listaK.consultar(i)
+             << "  Nombres=" << casosNombres.consultar(i) << endl;
+    }
 
-Imprimir siempre `"\n"` en cada iteración:
-
-```cpp
-for (int i = 1; i <= nombres.getLong(); ++i) {
-    cout << nombres.consultar(i) << "\n";
+    return 0;
 }
 ```
-
-Eso deja una línea vacía extra al final del archivo si esa fue la última impresión global.
-
-### Patrón recomendado
-
-Imprimir el salto **antes** de cada línea excepto la primera línea total de salida:
-
-```cpp
-bool firstLine = true;
-
-if (!firstLine) cout << "\n";
-cout << "Caso " << caso << ": n=" << n << ", a=" << a << ", b=" << b;
-firstLine = false;
-
-for (int i = 1; i <= nombres.getLong(); ++i) {
-    cout << "\n" << nombres.consultar(i);
-}
-```
-
-### Regla práctica
-
-- Si el formato exige coincidencia exacta, evitá terminar la última línea con `\n`.
-- Preferí: separadores entre líneas (`"\n"` antes de imprimir la siguiente) en vez de `"\n"` al final de cada `cout`.
-- Verificá con redirección: `make run-file` y revisá el conteo de líneas esperado.

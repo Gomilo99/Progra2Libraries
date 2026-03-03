@@ -25,7 +25,7 @@ public:
             current = current->getNext();
         }
     }
-
+    Lista(const T&element) : head(new Nodo<T>(element)), tail(head), length(1) {}
     Lista<T>& operator=(const Lista<T>& other) {
         if (this == &other) {
             return *this;
@@ -412,6 +412,32 @@ public:
         return result;
     }
 
+    const T& consultarRef(int pos) const {
+        if (pos < 1 || pos > length) {
+            throw out_of_range("Posicion invalida en consultarRef");
+        }
+        if (pos == 1) return head->getInfo();
+        if (pos == length) return tail->getInfo();
+
+        Nodo<T> *current = head;
+        for (int i = 1; i < pos; ++i) {
+            current = current->getNext();
+        }
+        return current->getInfo();
+    }
+    T& consultarRef(int pos) {
+        if (pos < 1 || pos > length) {
+            throw out_of_range("Posicion invalida en consultarRef");
+        }
+        if (pos == 1) return head->getInfo();
+        if (pos == length) return tail->getInfo();
+
+        Nodo<T> *current = head;
+        for (int i = 1; i < pos; ++i) {
+            current = current->getNext();
+        }
+        return current->getInfo();
+    }
 };
 
 template <typename T>

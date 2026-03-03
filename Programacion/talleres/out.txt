@@ -1,0 +1,11 @@
+Caso 1  K=1  Nombres=[judas, iscariote, jacobo, mateo, pedro, andres, tomas, jesus, kira]
+Caso 2  K=5  Nombres=[juan, simon, natanael, felipe, santiago, victor, mary]
+Caso 3  K=7  Nombres=[Pokemon, DarkSouls, FinalFantasy, YsNordics, ValkyriaChronicles]
+Nombres del caso: [judas, iscariote, jacobo, mateo, pedro, andres, tomas, jesus, kira]
+Ganador: kira
+
+Nombres del caso: [juan, simon, natanael, felipe, santiago, victor, mary]
+Ganador: felipe
+
+Nombres del caso: [Pokemon, DarkSouls, FinalFantasy, YsNordics, ValkyriaChronicles]
+Ganador: ValkyriaChronicles

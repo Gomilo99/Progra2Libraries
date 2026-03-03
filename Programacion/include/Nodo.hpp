@@ -12,6 +12,7 @@ private:
 public:
     Nodo(const T& value, Nodo<T>* nextNode = NULL) : info(value), next(nextNode) {}
 
+    T& getInfo() { return info; }
     const T& getInfo() const { return info; }
     void setInfo(const T& value) { info = value; }
 
