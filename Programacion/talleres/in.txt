@@ -1,13 +1,17 @@
-3
-1
-5
-7
-judas juan Pokemon
-iscariote simon DarkSouls
-jacobo natanael FinalFantasy
-mateo felipe YsNordics
-pedro santiago ValkyriaChronicles
-andres victor
-tomas mary
-jesus
-kira
+Marca,Precio
+ford,4
+ford,3
+ford,4
+chevrolet,4
+ford,4
+ford,3
+ford,4
+chevrolet,4
+ford,4
+ford,3
+ford,4
+chevrolet,4
+ford,4
+ford,3
+ford,4
+chevrolet,4

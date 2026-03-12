@@ -5,37 +5,60 @@ CXXFLAGS := -std=c++11 -O2 -Wall -Wextra -Wpedantic
 INCLUDES := -Iinclude
 SRC_DIR := talleres
 BIN_DIR := bin
+OUTPUT_MODE := ex
+FIXED_OUTPUT_NAME := lpc
+BUILD_SCOPE := one
 
 ifeq ($(OS),Windows_NT)
 EXE_EXT := .exe
 MKDIR_BIN := if not exist "$(BIN_DIR)" mkdir "$(BIN_DIR)"
 RM_BIN := if exist "$(BIN_DIR)" rmdir /S /Q "$(BIN_DIR)"
-RUN_EXE = .\\$(BIN_DIR)\\$(EX)$(EXE_EXT)
 else
 EXE_EXT := 
 MKDIR_BIN := mkdir -p $(BIN_DIR)
 RM_BIN := rm -rf $(BIN_DIR)
-RUN_EXE = ./$(BIN_DIR)/$(EX)$(EXE_EXT)
 endif
 
 SOURCES := $(wildcard $(SRC_DIR)/*.cpp)
 TARGETS := $(patsubst $(SRC_DIR)/%.cpp,$(BIN_DIR)/%$(EXE_EXT),$(SOURCES))
 
-EX ?= 1-2025_semana_santa
+EX ?= 1-2024_puma
 DATA_DIR ?= talleres
 IN ?= $(DATA_DIR)/in.txt
 OUT ?= $(DATA_DIR)/out.txt
 
+ifeq ($(OUTPUT_MODE),fixed)
+OUTPUT_NAME := $(FIXED_OUTPUT_NAME)
+else
+OUTPUT_NAME := $(EX)
+endif
+
+ifeq ($(BUILD_SCOPE),all)
+ALL_TARGETS := $(TARGETS)
+else
+ALL_TARGETS := one
+endif
+
+ifeq ($(OS),Windows_NT)
+RUN_EXE = .\\$(BIN_DIR)\\$(OUTPUT_NAME)$(EXE_EXT)
+else
+RUN_EXE = ./$(BIN_DIR)/$(OUTPUT_NAME)$(EXE_EXT)
+endif
+
 .PHONY: all one run run-file list clean help
 
-all: $(TARGETS)
+all: $(ALL_TARGETS)
 
 
 $(BIN_DIR)/%$(EXE_EXT): $(SRC_DIR)/%.cpp
 	@$(MKDIR_BIN)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $< -o $@
 
-one: $(BIN_DIR)/$(EX)$(EXE_EXT)
+$(BIN_DIR)/$(FIXED_OUTPUT_NAME)$(EXE_EXT): $(SRC_DIR)/$(EX).cpp
+	@$(MKDIR_BIN)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< -o $@
+
+one: $(BIN_DIR)/$(OUTPUT_NAME)$(EXE_EXT)
 
 run: one
 	$(RUN_EXE)
@@ -46,11 +69,11 @@ run-file: one
 ifeq ($(OS),Windows_NT)
 list:
 	@echo Ejecutables disponibles:
-	@for %%f in ($(TARGETS)) do @echo %%f
+	@if "$(BUILD_SCOPE)" == "all" (for %%f in ($(TARGETS)) do @echo %%f) else if "$(OUTPUT_MODE)" == "fixed" (echo $(BIN_DIR)\\$(FIXED_OUTPUT_NAME)$(EXE_EXT) ^(desde $(SRC_DIR)\\$(EX).cpp^)) else (echo $(BIN_DIR)\\$(EX)$(EXE_EXT))
 else
 list:
 	@echo "Ejecutables disponibles:"
-	@for f in $(TARGETS); do echo $$f; done
+	@if [ "$(BUILD_SCOPE)" = "all" ]; then for f in $(TARGETS); do echo $$f; done; elif [ "$(OUTPUT_MODE)" = "fixed" ]; then echo "$(BIN_DIR)/$(FIXED_OUTPUT_NAME)$(EXE_EXT) (desde $(SRC_DIR)/$(EX).cpp)"; else echo "$(BIN_DIR)/$(EX)$(EXE_EXT)"; fi
 endif
 
 clean:
@@ -58,11 +81,18 @@ clean:
 
 help:
 	@echo "Comandos disponibles:"
+	@echo "  Edita OUTPUT_MODE := ex o OUTPUT_MODE := fixed"
+	@echo "  Edita FIXED_OUTPUT_NAME := lpc, arboles, etc."
+	@echo "  Edita BUILD_SCOPE := one o BUILD_SCOPE := all"
 	@echo "  make all"
 	@echo "  make one EX=09_longest_zigzag"
 	@echo "  make run EX=09_longest_zigzag"
 	@echo "  make run-file EX=09_longest_zigzag"
 	@echo "  make run-file EX=09_longest_zigzag DATA_DIR=talleres"
 	@echo "  make run-file EX=09_longest_zigzag IN=talleres/caso.txt OUT=talleres/resultado.txt"
+	@echo "  En modo ex genera bin/nombre_del_archivo$(EXE_EXT)"
+	@echo "  En modo fixed genera bin/nombre_fijo$(EXE_EXT) usando el .cpp indicado en EX"
+	@echo "  En modo one, make compila solo EX"
+	@echo "  En modo all, make compila todos los .cpp con sus propios nombres"
 	@echo "  make list"
 	@echo "  make clean"
