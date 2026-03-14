@@ -573,3 +573,252 @@ int main() {
     return 0;
 }
 ```
+
+## 14) Entrada estandar de Taller 1-2024 CSV Moda
+
+### Entrada esperada
+
+```text
+Marca,Precio
+ford,4
+ford,3
+ford,4
+chevrolet,4
+```
+
+### Cómo se entiende esta entrada
+
+- La primera línea es especial: no trae datos de la tabla, trae los nombres de las columnas.
+- Cada línea siguiente representa una fila del CSV.
+- Cada fila tiene la misma cantidad de campos que el encabezado.
+- Los campos están separados por coma.
+- En esta consigna no hay espacios después de la coma y no hay celdas vacías.
+
+### Qué hay que leer primero
+
+1. Leer la primera línea completa con `getline`.
+2. Separar esa línea por comas para obtener los encabezados.
+3. Crear una estructura por columna, no por fila, porque luego debes calcular la moda de cada columna completa.
+
+### Por qué conviene guardar por columnas
+
+Si guardas por filas, después tendrías que volver a recorrer toda la tabla para reconstruir cada columna.
+Si guardas por columnas desde el inicio:
+
+- la columna 1 acumula todos los valores de `Marca`
+- la columna 2 acumula todos los valores de `Precio`
+- luego puedes calcular la moda de cada columna directamente
+
+### Lectura paso a paso del `main`
+
+Supón esta entrada:
+
+```text
+Marca,Precio
+ford,4
+ford,3
+chevrolet,4
+```
+
+#### Paso 1: leer el encabezado completo
+
+```cpp
+string linea;
+getline(cin, linea);
+```
+
+Después de esto, `linea` vale:
+
+```text
+Marca,Precio
+```
+
+#### Paso 2: separar el encabezado por comas
+
+```cpp
+Lista<string> encabezados;
+separarCSV(linea, encabezados);
+```
+
+Ahora `encabezados` contiene:
+
+- posición 1: `Marca`
+- posición 2: `Precio`
+
+#### Paso 3: crear una lista de columnas vacías
+
+```cpp
+Lista<Lista<string> > columnas;
+for (int i = 1; i <= encabezados.getLong(); ++i) {
+    columnas.insertar(Lista<string>(), columnas.getLong() + 1);
+}
+```
+
+Aquí se crean dos columnas vacías:
+
+- `columnas[1]` para todos los valores de `Marca`
+- `columnas[2]` para todos los valores de `Precio`
+
+#### Paso 4: leer cada fila restante con `getline`
+
+```cpp
+while (getline(cin, linea)) {
+    Lista<string> fila;
+    separarCSV(linea, fila);
+    ...
+}
+```
+
+Cada iteración toma una fila completa del CSV. Por ejemplo:
+
+- primera iteración: `ford,4`
+- segunda iteración: `ford,3`
+- tercera iteración: `chevrolet,4`
+
+#### Paso 5: separar la fila en celdas
+
+Si `linea` es `ford,4`, entonces:
+
+```cpp
+Lista<string> fila;
+separarCSV(linea, fila);
+```
+
+deja:
+
+- `fila[1] = ford`
+- `fila[2] = 4`
+
+#### Paso 6: mover cada celda a su columna correspondiente
+
+```cpp
+for (int i = 1; i <= encabezados.getLong(); ++i) {
+    columnas.consultarRef(i).insertar(fila.consultar(i), columnas.consultarRef(i).getLong() + 1);
+}
+```
+
+Después de procesar las tres filas del ejemplo, queda:
+
+- columna `Marca`: `ford`, `ford`, `chevrolet`
+- columna `Precio`: `4`, `3`, `4`
+
+### Cómo se calcula la moda después de leer
+
+Ya con las columnas completas, solo recorres cada una:
+
+```cpp
+Lista<string> modas;
+for (int i = 1; i <= columnas.getLong(); ++i) {
+    modas.insertar(calcularModa(columnas.consultar(i)), modas.getLong() + 1);
+}
+```
+
+Entonces:
+
+- la moda de `Marca` es `ford`
+- la moda de `Precio` es `4`
+
+### Qué imprime el programa al final
+
+Primero imprime el encabezado original:
+
+```text
+Marca,Precio
+```
+
+Luego imprime la fila con las modas:
+
+```text
+ford,4
+```
+
+### Resumen mental rápido para este ejercicio
+
+1. `getline` para leer una línea completa del CSV.
+2. `separarCSV` para cortar esa línea por comas.
+3. Guardar datos por columnas.
+4. Calcular una moda por cada columna.
+5. Imprimir dos filas: encabezados y modas.
+
+## 15) Metodos `moda()` y `mediana()` en la clase Lista
+
+Se añadieron dos métodos útiles a [Programacion/include/Lista.hpp](Programacion/include/Lista.hpp):
+
+- `moda()`
+- `mediana()`
+
+### `moda()`
+
+Uso:
+
+```cpp
+Lista<int> datos;
+datos.insertar(4, 1);
+datos.insertar(2, 2);
+datos.insertar(4, 3);
+
+int m = datos.moda();
+```
+
+Comportamiento:
+
+- Cuenta cuántas veces aparece cada valor.
+- Si existe una única frecuencia máxima, devuelve ese valor.
+- Si la lista está vacía, lanza excepción.
+- Si no hay moda única, también lanza excepción.
+
+Ejemplo:
+
+```cpp
+Lista<string> nombres;
+nombres.insertar("ana", 1);
+nombres.insertar("luis", 2);
+nombres.insertar("ana", 3);
+
+string moda = nombres.moda(); // "ana"
+```
+
+### `mediana()`
+
+Uso:
+
+```cpp
+Lista<int> datos;
+datos.insertar(7, 1);
+datos.insertar(1, 2);
+datos.insertar(9, 3);
+
+double med = datos.mediana();
+```
+
+Comportamiento:
+
+- Hace una copia de la lista.
+- Ordena la copia de menor a mayor.
+- Si la cantidad de elementos es impar, devuelve el del centro.
+- Si es par, devuelve el promedio de los dos centrales.
+- Si la lista está vacía, lanza excepción.
+- Solo está disponible para tipos numéricos.
+
+Ejemplos:
+
+```cpp
+Lista<int> a;
+a.insertar(7, 1);
+a.insertar(1, 2);
+a.insertar(9, 3);
+double medA = a.mediana(); // 7
+
+Lista<int> b;
+b.insertar(10, 1);
+b.insertar(4, 2);
+b.insertar(6, 3);
+b.insertar(8, 4);
+double medB = b.mediana(); // 7
+```
+
+### Cuándo conviene usarlos
+
+- Usa `moda()` cuando necesites el valor más repetido.
+- Usa `mediana()` cuando necesites el valor central de un conjunto numérico ordenado.
+- Si tu consigna dice que en caso de empate debes imprimir `ninguna`, captura la excepción de `moda()` y tradúcela a la salida pedida.

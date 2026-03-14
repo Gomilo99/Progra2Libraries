@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <stdexcept>
+#include <type_traits>
 #include <vector>
 #include "Nodo.hpp"
 
@@ -245,6 +246,80 @@ public:
             current = current->getNext();
         }
         current->setInfo(element);
+    }
+
+    T moda() const {
+        if (esVacia()) {
+            throw logic_error("No se puede calcular la moda de una lista vacia");
+        }
+
+        Lista<T> valoresUnicos;
+        Lista<int> frecuencias;
+
+        for (int i = 1; i <= length; ++i) {
+            T valor = consultar(i);
+            int posicion = valoresUnicos.buscar(valor);
+
+            if (posicion == -1) {
+                valoresUnicos.insertar(valor, valoresUnicos.getLong() + 1);
+                frecuencias.insertar(1, frecuencias.getLong() + 1);
+            } else {
+                frecuencias.modificar(posicion, frecuencias.consultar(posicion) + 1);
+            }
+        }
+
+        int maxFrecuencia = 0;
+        int posicionModa = -1;
+        int cantidadMaximos = 0;
+
+        for (int i = 1; i <= frecuencias.getLong(); ++i) {
+            int frecuencia = frecuencias.consultar(i);
+
+            if (frecuencia > maxFrecuencia) {
+                maxFrecuencia = frecuencia;
+                posicionModa = i;
+                cantidadMaximos = 1;
+            } else if (frecuencia == maxFrecuencia) {
+                ++cantidadMaximos;
+            }
+        }
+
+        if (maxFrecuencia <= 1 || cantidadMaximos > 1) {
+            throw logic_error("No hay moda unica en la lista");
+        }
+
+        return valoresUnicos.consultar(posicionModa);
+    }
+
+    double mediana() const {
+        static_assert(std::is_arithmetic<T>::value, "mediana requiere un tipo numerico");
+
+        if (esVacia()) {
+            throw logic_error("No se puede calcular la mediana de una lista vacia");
+        }
+
+        Lista<T> ordenada(*this);
+
+        for (int i = 2; i <= ordenada.getLong(); ++i) {
+            T clave = ordenada.consultar(i);
+            int j = i - 1;
+
+            while (j >= 1 && ordenada.consultar(j) > clave) {
+                ordenada.modificar(j + 1, ordenada.consultar(j));
+                --j;
+            }
+
+            ordenada.modificar(j + 1, clave);
+        }
+
+        int n = ordenada.getLong();
+        if (n % 2 == 1) {
+            return static_cast<double>(ordenada.consultar((n + 1) / 2));
+        }
+
+        double izquierdo = static_cast<double>(ordenada.consultar(n / 2));
+        double derecho = static_cast<double>(ordenada.consultar((n / 2) + 1));
+        return (izquierdo + derecho) / 2.0;
     }
 
     void print(ostream& os = cout) const {
