@@ -1,0 +1,53 @@
+[A, B, C]
+Lista Modificada: [B, C, A]
+Devoto sacrificado: B
+Lista Modificada: [A, C]
+Devoto sacrificado: A
+ILUMINACION ESPIRITUAL: [C]
+-------
+[D, E]
+Lista Modificada: [E, D]
+Devoto sacrificado: E
+ILUMINACION ESPIRITUAL: [D]
+-------
+[F, G, H]
+Lista Modificada: [G, H, F]
+Devoto sacrificado: G
+Lista Modificada: [F, H]
+Devoto sacrificado: F
+ILUMINACION ESPIRITUAL: [H]
+-------
+[DarkSouls, Pokemon, FinalFantasy, DragonQuest, Persona5, GodOfWar]
+Lista Modificada: [Pokemon, FinalFantasy, DragonQuest, Persona5, GodOfWar, DarkSouls]
+Devoto sacrificado: Pokemon
+Lista Modificada: [DragonQuest, Persona5, GodOfWar, DarkSouls, FinalFantasy]
+Devoto sacrificado: DragonQuest
+Lista Modificada: [GodOfWar, DarkSouls, FinalFantasy, Persona5]
+Devoto sacrificado: GodOfWar
+Lista Modificada: [FinalFantasy, Persona5, DarkSouls]
+Devoto sacrificado: FinalFantasy
+Lista Modificada: [DarkSouls, Persona5]
+Devoto sacrificado: DarkSouls
+ILUMINACION ESPIRITUAL: [Persona5]
+-------
+[Megathread, Machine, RandomForest, Gradient]
+Lista Modificada: [Machine, RandomForest, Gradient, Megathread]
+Devoto sacrificado: Machine
+Lista Modificada: [Gradient, Megathread, RandomForest]
+Devoto sacrificado: Gradient
+Lista Modificada: [RandomForest, Megathread]
+Devoto sacrificado: RandomForest
+ILUMINACION ESPIRITUAL: [Megathread]
+-------
+[Elena, Rawa, Beto, Alvaro, Jesus]
+Lista Modificada: [Rawa, Beto, Alvaro, Jesus, Elena]
+Devoto sacrificado: Rawa
+Lista Modificada: [Alvaro, Jesus, Elena, Beto]
+Devoto sacrificado: Alvaro
+Lista Modificada: [Elena, Beto, Jesus]
+Devoto sacrificado: Elena
+Lista Modificada: [Jesus, Beto]
+Devoto sacrificado: Jesus
+ILUMINACION ESPIRITUAL: [Beto]
+-------
+Devoto elegido para ritual del pollo: Beto

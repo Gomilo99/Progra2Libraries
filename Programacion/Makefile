@@ -1,11 +1,11 @@
 # Makefile aplicado para todos los ejercicios del proyecto
 
 CXX := g++
-CXXFLAGS := -std=c++11 -O2 -Wall -Wextra -Wpedantic
+CXXFLAGS := -std=c++98 -O2 -Wall -Wextra -Wpedantic
 INCLUDES := -Iinclude
 SRC_DIR := talleres
 BIN_DIR := bin
-OUTPUT_MODE := ex
+OUTPUT_MODE := fixed
 FIXED_OUTPUT_NAME := lpc
 BUILD_SCOPE := one
 
@@ -22,7 +22,7 @@ endif
 SOURCES := $(wildcard $(SRC_DIR)/*.cpp)
 TARGETS := $(patsubst $(SRC_DIR)/%.cpp,$(BIN_DIR)/%$(EXE_EXT),$(SOURCES))
 
-EX ?= 1-2024_puma
+EX ?= 1-2026_asamblea
 DATA_DIR ?= talleres
 IN ?= $(DATA_DIR)/in.txt
 OUT ?= $(DATA_DIR)/out.txt

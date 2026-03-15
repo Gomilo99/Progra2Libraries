@@ -8,6 +8,12 @@
 
 using namespace std;
 
+/**
+ * @brief Interseccion de dos listas ordenadas ascendentemente.
+ * @param a Primera lista ordenada.
+ * @param b Segunda lista ordenada.
+ * @return Lista con valores comunes en orden.
+ */
 inline Lista<int> sortedIntersect(Lista<int> a, Lista<int> b) {
     Lista<int> result;
     while (!a.esVacia() && !b.esVacia()) {
@@ -27,6 +33,11 @@ inline Lista<int> sortedIntersect(Lista<int> a, Lista<int> b) {
     return result;
 }
 
+/**
+ * @brief Comprime una lista en pares (valor, frecuencia) consecutivos.
+ * @param target Lista de entrada.
+ * @return Lista de pares [valor, cantidad].
+ */
 inline Lista<Lista<int> > compact(Lista<int> target) {
     Lista<Lista<int> > result;
     if (target.esVacia()) {
@@ -60,6 +71,11 @@ inline Lista<Lista<int> > compact(Lista<int> target) {
     return result;
 }
 
+/**
+ * @brief Expande pares [valor, frecuencia] a una lista plana.
+ * @param target Lista compactada.
+ * @return Lista expandida.
+ */
 inline Lista<int> expand(Lista<Lista<int> > target) {
     Lista<int> result;
 
@@ -78,6 +94,13 @@ inline Lista<int> expand(Lista<Lista<int> > target) {
     return result;
 }
 
+/**
+ * @brief Calcula media movil para una ventana fija.
+ * @param target Serie de entrada.
+ * @param window Tamano de ventana.
+ * @return Serie de medias moviles.
+ * @throw invalid_argument Si window <= 0.
+ */
 inline Lista<float> mediaMovil(Lista<float> target, int window) {
     if (window <= 0) {
         throw invalid_argument("window debe ser positivo");
@@ -107,6 +130,13 @@ inline Lista<float> mediaMovil(Lista<float> target, int window) {
     return result;
 }
 
+/**
+ * @brief Calcula desviacion estandar movil para una ventana fija.
+ * @param target Serie de entrada.
+ * @param window Tamano de ventana.
+ * @return Serie de desviaciones estandar.
+ * @throw invalid_argument Si window <= 0.
+ */
 inline Lista<float> rollingStandardDeviation(Lista<float> target, int window) {
     if (window <= 0) {
         throw invalid_argument("window debe ser positivo");
@@ -145,6 +175,12 @@ inline Lista<float> rollingStandardDeviation(Lista<float> target, int window) {
     return result;
 }
 
+/**
+ * @brief Cuenta inversiones locales por cada ventana de tamano k.
+ * @param target Lista de entrada.
+ * @param k Tamano de ventana.
+ * @return Conteo por ventana.
+ */
 inline Lista<int> localInversionsInWindows(Lista<int> target, int k) {
     if (k <= 1) {
         Lista<int> vacia;
@@ -196,6 +232,11 @@ inline Lista<int> localInversionsInWindows(Lista<int> target, int k) {
     return result;
 }
 
+/**
+ * @brief Longitud maxima de sublista en patron zig-zag.
+ * @param target Lista de entrada.
+ * @return Longitud de la mayor sublista zig-zag.
+ */
 inline int longestZigZagSublist(Lista<int> target) {
     if (target.getLong() < 3) {
         return target.getLong();
@@ -237,6 +278,11 @@ inline int longestZigZagSublist(Lista<int> target) {
     return maxCounter + 2;
 }
 
+/**
+ * @brief Longitud maxima de alternancia par-impar consecutiva.
+ * @param target Lista de entrada.
+ * @return Longitud maxima alternante por paridad.
+ */
 inline int longestParityAlternatingSublist(Lista<int> target) {
     if (target.esVacia()) {
         return 0;
@@ -268,6 +314,12 @@ inline int longestParityAlternatingSublist(Lista<int> target) {
     return maxLen;
 }
 
+/**
+ * @brief Cuenta cambios de tendencia por ventanas de tamano k.
+ * @param target Lista de entrada.
+ * @param k Tamano de ventana.
+ * @return Cantidad de cambios por ventana.
+ */
 inline Lista<int> trendChangesInWindows(Lista<int> target, int k) {
     Lista<int> result;
     if (k <= 1 || target.getLong() < k) {

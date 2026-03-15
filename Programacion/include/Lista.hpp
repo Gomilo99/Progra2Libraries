@@ -3,12 +3,14 @@
 
 #include <iostream>
 #include <stdexcept>
-#include <type_traits>
-#include <vector>
 #include "Nodo.hpp"
 
 using namespace std;
 
+/**
+ * @brief Lista simplemente enlazada generica.
+ * @tparam T Tipo de dato almacenado.
+ */
 template <typename T>
 class Lista {
 private:
@@ -17,8 +19,15 @@ private:
     int length;
 
 public:
+    /**
+     * @brief Construye una lista vacia.
+     */
     Lista() : head(NULL), tail(NULL), length(0) {}
 
+    /**
+     * @brief Constructor de copia.
+     * @param other Lista origen.
+     */
     Lista(const Lista<T>& other) : head(NULL), tail(NULL), length(0) {
         Nodo<T> *current = other.head;
         while (current) {
@@ -26,7 +35,18 @@ public:
             current = current->getNext();
         }
     }
+
+    /**
+     * @brief Construye una lista con un elemento inicial.
+     * @param element Primer elemento.
+     */
     Lista(const T&element) : head(new Nodo<T>(element)), tail(head), length(1) {}
+
+    /**
+     * @brief Operador de asignacion por copia.
+     * @param other Lista origen.
+     * @return Referencia a esta lista.
+     */
     Lista<T>& operator=(const Lista<T>& other) {
         if (this == &other) {
             return *this;
@@ -40,18 +60,35 @@ public:
         return *this;
     }
 
+    /**
+     * @brief Destructor.
+     */
     ~Lista() {
         vaciar();
     }
 
+    /**
+     * @brief Retorna la longitud actual.
+     * @return Cantidad de elementos.
+     */
     int getLong() const {
         return length;
     }
 
+    /**
+     * @brief Indica si la lista esta vacia.
+     * @return true si no tiene elementos.
+     */
     bool esVacia() const {
         return length == 0;
     }
 
+    /**
+     * @brief Consulta un elemento por posicion (1..n).
+     * @param pos Posicion 1-based.
+     * @return Copia del elemento en pos.
+     * @throw out_of_range Si pos es invalida.
+     */
     T consultar(int pos) const {
         if (pos < 1 || pos > length) {
             throw out_of_range("Posicion invalida en consultar");
@@ -72,6 +109,12 @@ public:
         return current->getInfo();
     }
 
+    /**
+     * @brief Inserta un elemento en una posicion (1..n+1).
+     * @param element Elemento a insertar.
+     * @param pos Posicion destino 1-based.
+     * @throw out_of_range Si pos es invalida.
+     */
     void insertar(const T& element, int pos) {
         if (pos < 1 || pos > length + 1) {
             throw out_of_range("Posicion invalida en insertar");
@@ -110,6 +153,11 @@ public:
         ++length;
     }
 
+    /**
+     * @brief Elimina el elemento en una posicion (1..n).
+     * @param pos Posicion a eliminar.
+     * @throw out_of_range Si pos es invalida.
+     */
     void eliminar(int pos) {
         if (pos < 1 || pos > length) {
             throw out_of_range("Posicion invalida en eliminar");
@@ -154,6 +202,11 @@ public:
         --length;
     }
 
+    /**
+     * @brief Busca la primera ocurrencia de un elemento.
+     * @param element Elemento buscado.
+     * @return Posicion 1-based o -1 si no existe.
+     */
     int buscar(const T& element) const {
         Nodo<T> *current = head;
         int pos = 1;
@@ -167,6 +220,9 @@ public:
         return -1;
     }
 
+    /**
+     * @brief Invierte el orden de la lista en sitio.
+     */
     void invertir() {
         Nodo<T>* prev = NULL;
         Nodo<T>* current = head;
@@ -182,10 +238,17 @@ public:
         head = prev;
     }
 
+    /**
+     * @brief Retorna una copia de la lista.
+     * @return Copia completa.
+     */
     Lista<T> copiar() const {
         return Lista<T>(*this);
     }
 
+    /**
+     * @brief Elimina todos los nodos de la lista.
+     */
     void vaciar() {
         Nodo<T>* current = head;
         while (current) {
@@ -198,6 +261,11 @@ public:
         length = 0;
     }
 
+    /**
+     * @brief Concatena esta lista con otra.
+     * @param target Lista a anexar.
+     * @return Nueva lista con ambos contenidos.
+     */
     Lista<T> concatenar(const Lista<T>& target) const {
         Lista<T> result(*this);
         Nodo<T>* current = target.head;
@@ -208,10 +276,19 @@ public:
         return result;
     }
 
+    /**
+     * @brief Alias de vaciar().
+     */
     void destruir() {
         vaciar();
     }
 
+    /**
+     * @brief Intercambia dos posiciones.
+     * @param pos1 Primera posicion.
+     * @param pos2 Segunda posicion.
+     * @throw out_of_range Si alguna posicion es invalida.
+     */
     void intercambiar(int pos1, int pos2) {
         if (pos1 < 1 || pos1 > length || pos2 < 1 || pos2 > length) {
             throw out_of_range("Posicion invalida en intercambiar");
@@ -226,6 +303,12 @@ public:
         modificar(pos2, a);
     }
 
+    /**
+     * @brief Reemplaza el valor en una posicion.
+     * @param pos Posicion a modificar.
+     * @param element Nuevo valor.
+     * @throw out_of_range Si pos es invalida.
+     */
     void modificar(int pos, const T& element) {
         if (pos < 1 || pos > length) {
             throw out_of_range("Posicion invalida en modificar");
@@ -248,6 +331,11 @@ public:
         current->setInfo(element);
     }
 
+    /**
+     * @brief Calcula la moda unica de la lista.
+     * @return Valor mas frecuente.
+     * @throw logic_error Si la lista esta vacia o no hay moda unica.
+     */
     T moda() const {
         if (esVacia()) {
             throw logic_error("No se puede calcular la moda de una lista vacia");
@@ -291,9 +379,12 @@ public:
         return valoresUnicos.consultar(posicionModa);
     }
 
+    /**
+     * @brief Calcula la mediana de la lista.
+     * @return Mediana como double.
+     * @throw logic_error Si la lista esta vacia.
+     */
     double mediana() const {
-        static_assert(std::is_arithmetic<T>::value, "mediana requiere un tipo numerico");
-
         if (esVacia()) {
             throw logic_error("No se puede calcular la mediana de una lista vacia");
         }
@@ -322,6 +413,10 @@ public:
         return (izquierdo + derecho) / 2.0;
     }
 
+    /**
+     * @brief Imprime la lista como [a, b, c].
+     * @param os Flujo de salida.
+     */
     void print(ostream& os = cout) const {
         os << "[";
         Nodo<T>* current = head;
@@ -334,31 +429,9 @@ public:
         }
         os << "]";
     }
-    /*
-    void printLista(ostream& os = cout) const {
-        print(os);
-    }
-    */
-    
-    vector<T> toVector() const {
-        vector<T> values;
-        values.reserve(length);
-        Nodo<T> *current = head;
-        while (current) {
-            values.push_back(current->getInfo());
-            current = current->getNext();
-        }
-        return values;
-    }
-
-    static Lista<T> fromVector(const vector<T>& values) {
-        Lista<T> result;
-        for (size_t i = 0; i < values.size(); ++i) {
-            result.insertar(values[i], result.getLong() + 1);
-        }
-        return result;
-    }
-
+        /**
+         * @brief Reordena dejando impares por indice primero y luego pares por indice.
+         */
     void reorderOddAndEven() {
         if (!head || !head->getNext()) {
             return;
@@ -393,6 +466,10 @@ public:
         }
     }
 
+    /**
+     * @brief Desplaza circularmente a la derecha.
+     * @param shift Cantidad de posiciones.
+     */
     void rightShift(int shift) {
         if (length <= 1) {
             return;
@@ -415,6 +492,10 @@ public:
         tail = newTail;
     }
 
+    /**
+     * @brief Mezcla sublistas de indices impares y pares, asumiendo orden en ambas.
+     * @return Nueva lista parcialmente reordenada.
+     */
     Lista<T> partialReorderOddEvenSorted() const {
         Lista<T> result;
         if (!head) {
@@ -451,6 +532,10 @@ public:
         return result;
     }
 
+    /**
+     * @brief Mezcla dos mitades ordenadas de la lista.
+     * @return Nueva lista mezclada.
+     */
     Lista<T> partialReorderHalvesSorted() const {
         Lista<T> result;
         if (!head) {
@@ -487,6 +572,12 @@ public:
         return result;
     }
 
+    /**
+     * @brief Consulta por referencia constante (1..n).
+     * @param pos Posicion 1-based.
+     * @return Referencia constante al elemento.
+     * @throw out_of_range Si pos es invalida.
+     */
     const T& consultarRef(int pos) const {
         if (pos < 1 || pos > length) {
             throw out_of_range("Posicion invalida en consultarRef");
@@ -500,6 +591,13 @@ public:
         }
         return current->getInfo();
     }
+
+    /**
+     * @brief Consulta por referencia modificable (1..n).
+     * @param pos Posicion 1-based.
+     * @return Referencia modificable al elemento.
+     * @throw out_of_range Si pos es invalida.
+     */
     T& consultarRef(int pos) {
         if (pos < 1 || pos > length) {
             throw out_of_range("Posicion invalida en consultarRef");
@@ -515,6 +613,13 @@ public:
     }
 };
 
+/**
+ * @brief Sobrecarga del operador << para Lista.
+ * @tparam T Tipo de dato almacenado.
+ * @param os Flujo de salida.
+ * @param list Lista a imprimir.
+ * @return Flujo de salida.
+ */
 template <typename T>
 ostream& operator<<(ostream& os, const Lista<T>& list) {
     list.print(os);
