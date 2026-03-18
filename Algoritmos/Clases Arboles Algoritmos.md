@@ -11,7 +11,7 @@ base:
 ---
 ## Árboles Binarios
 ### Clase NodoBin
-```pseudo
+```
 Class NodoBin<Element>
 	Attributes
 		Private:
@@ -25,7 +25,7 @@ Class NodoBin<Element>
 			...
 ```
 ### Clase ÁrbolBin
-```pseudo
+```
 Class ArbolBin<Element>
 	Attributes
 		Private:
@@ -63,7 +63,7 @@ endClass
 ![[algoritmos2_clase_4_arboles_img8.png]]
 
 ### Clase NodoN
-```pseudo
+```
 Class NodoN<Element>
 	Attributes
 		Private:
@@ -77,7 +77,7 @@ Class NodoN<Element>
 			...
 ```
 ### Clase ArbolN
-```pseudo
+```
 Class ArbolN<Element>
 	Attributes
 		Private:

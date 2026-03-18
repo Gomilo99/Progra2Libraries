@@ -110,6 +110,7 @@ while condicion
 ## Funciones y procedimientos
 
 ### Función
+Siempre debe devolver algo
 ```Pseudocodigo
 func NombreFuncion(parametros): TipoSalida
   Var
@@ -121,6 +122,7 @@ endfunc
 ```
 
 ### Procedimiento
+En los procedimientos NO se puede devolver valores, se puede usar referencias pero no return `algo` o return vacio.
 ```Pseudocodigo
 proc NombreProcedimiento(parametros)
   Var
@@ -170,4 +172,10 @@ func/proc NombreClase::NombreMetodo(parametros)[:TipoSalida]
   Begin
     bloqueCodigo
 endfunc/endproc
+```
+
+## Promt de ejemplo de uso
+probado en visual studio code con extension copilot y pasando el archivo de relgas, clases lpc, clases arboles y ejercicio poo
+```
+Actua como un desarrollador de software y mi profesor de la universidad en Estructuras de datos 2 en la carrera de computación. Analiza las reglas de escritura de pesudocodigo de la universidad, analiza como se hace la declaración e implementación de clases y estructuras como LPC y arboles y analiza los enunciados y las resoluciones de los ejercicios de arboles en parciales anteriores para que dado un ejercicio que te de puedas resolverlo de forma clara y explicativa. Usa únicamente la sintaxis que se te presenta en el archivo de reglas y las clases y explica como funcionaría las respuestas como una corrida en frío, dando pistas. Adicionalmente completa y revisa que todos los ejercicios de #file:Ejercicios Arboles.md den sus respuestas correctamente y completa los metodos de postorden e inorden
 ```
