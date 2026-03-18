@@ -386,27 +386,28 @@ Dado un árbol n-ario. Implemente el método:
 ``func ArbolN<int>::getMaxLevel(): Lista<int>``
 Que devuelva la lista de elementos que conforman el nivel cuya suma de sus elementos sea máxima. 
 >La solución debe ser a lo sumo O(n) y DEBE USAR APUNTADORES.
+*Version de Doble buffer y lista auxiliar (misma logica de suma interna)*
 ```
 func ArbolN<int>::getMaxLevel(): Lista<int>
 	Var
-		Cola<Cola<pointer to NodoN<int>>>: switch
-		Cola<pointer to NodoN<int>>: colaAux
+		Lista<Lista<pointer to NodoN<int>>>: switch
+		Lista<pointer to NodoN<int>>: listaAux
 		Lista<int>: result
 		pointer to NodoN<int>: ptr, hijo
 		int: sum, max, recorrido, llenado
 		
 	Begin
-		result.constuir()
-		colaAux.constuir()
+		result.construir()
+		listaAux.construir()
 		swtich.construir()
-		switch.insertar(colaAux, 1)
-		switch.insertar(colaAux, 1)
+		switch.insertar(listaAux, 1)
+		switch.insertar(listaAux, 1)
 		switch.consultar(1).insertar(instance.nodoRaiz, 1)
 		ptr <- instance.nodoRaiz
 		recorrido <- 1
 		llenado <- 2
 		sum <- 0
-		max <- -1
+		max <- -inf
 		
 		while ¬switch.consultar(recorrido).esVacia() do
 			sum <- 0
@@ -415,22 +416,24 @@ func ArbolN<int>::getMaxLevel(): Lista<int>
 				ptr <- switch.consultar(recorrido).consultar(1)
 				switch.consultar(recorrido).eliminar(1)
 				sum <- sum + ptr->getInfo()
-				// Idea de guardado temporal del resultado
+
+				// Guardado temporal del resultado
 				listaAux.insertar(ptr->getInfo(), listaAux.getLong() +1)
 
 				// Procesar hijos
 				hijo <- ptr->getHijoIzq()
 				while hijo do
 					switch.consultar(llenado).insertar(hijo, switch.consultar(llenado).getLong() +1)
-					hijo <- hijo.getHnoDer()
+					hijo <- hijo->getHnoDer()
 				endwhile
 			endwhile
 
 			// Procesamiento de datos
 			if sum > max then
 				max <- sum
-				// Idea de vaciado de lista temporal hacia result
-				while listaAux.esVacia() do
+				// Vaciado de lista temporal hacia result
+				result.vaciar()
+				while ¬listaAux.esVacia() do
 					result.insertar(listaAux.consultar(1), result.getLong() +1)
 					listaAux.eliminar(1)
 				endwhile
@@ -446,6 +449,54 @@ func ArbolN<int>::getMaxLevel(): Lista<int>
 
 		// Retorno de resultado
 		return result
+endfunc
+```
+*Version de una sola cola y tamaño de nivel*
+```
+func ArbolN<int>::getMaxLevel(): Lista<int>
+    Var
+        Cola<pointer to NodoN<int>>: colaAux
+        Lista<int>: nivelAux, result
+        pointer to NodoN<int>: ptr, hijo
+        int: tamNivel, i, sumaNivel, max
+    Begin
+        colaAux.construir()
+        nivelAux.construir()
+        result.construir()
+
+        colaAux.encolar(instance.nodoRaiz)
+        max <- -inf
+
+        while ¬colaAux.esVacia() do
+            tamNivel <- colaAux.getLong()
+            sumaNivel <- 0
+            nivelAux.vaciar()
+
+            for i <- 1 to tamNivel do
+                ptr <- colaAux.getFrente()
+                colaAux.desencolar()
+
+                sumaNivel <- sumaNivel + ptr->getInfo()
+                nivelAux.insertar(ptr->getInfo(), nivelAux.getLong() + 1)
+
+                hijo <- ptr->getHijoIzq()
+                while hijo do
+                    colaAux.encolar(hijo)
+                    hijo <- hijo->getHnoDer()
+                endwhile
+            endfor
+
+            if sumaNivel > max then
+                max <- sumaNivel
+                result.vaciar()
+                while ¬nivelAux.esVacia() do
+                    result.insertar(nivelAux.consultar(1), result.getLong() + 1)
+                    nivelAux.eliminar(1)
+                endwhile
+            endif
+        endwhile
+
+        return result
 endfunc
 ```
 **Ejercicio 2: camino entre u y v**
