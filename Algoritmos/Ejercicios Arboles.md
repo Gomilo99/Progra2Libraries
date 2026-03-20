@@ -326,7 +326,9 @@ Se define el isomorfismo de arboles como una biyección de los nodos de un grafo
 Esta definición matemática del problema es muy elegante, formal y puede causar confusión y
 temor en el estudiante que está presentando esta evaluación. Sin embargo, solo fue colocada para ocupar espacio en la hoja. Realmente dos árboles son isomorfos si y sólo si su arquitectura es igual sin importar el contenido de sus nodos. Ejemplo:
 ![[ejercicios_arboles_isomorfos.png]]
-Implemente el método: ``func ArbolBin<entero>::esIsomorfo(ArbolBin<entero>: b): logico`` que retorna verdadero si ambos árboles son isomorfos. 
+Implemente el método: 
+``func ArbolBin<entero>::esIsomorfo(ArbolBin<entero>: b): logico``
+ que retorna verdadero si ambos árboles son isomorfos. 
 >UTILICE SOLO APUNTADORES en su solución y esta debe ser a lo sumo O(n).
 
 ``` Pseudocodigo
@@ -350,7 +352,9 @@ endfunc
 ```
 **Ejercicio 2: Princesa más cercana**
 Suponemos la clase “Personaje” con dos métodos: “esDragon()” y “esPrincesa()” que permiten determinar si un personaje es un dragón o es una princesa, respectivamente. Suponemos también que ningún personaje es dragón y princesa a la vez, pero que un personaje puede no ser ninguna de las dos cosas. Dado un árbol n-ario A cuyos elementos son del tipo “Personaje”, se denominan nodos accesibles aquellos nodos tales que a lo largo del camino desde la raíz hasta el nodo (ambos inclusive) no se encuentra ningún dragón. 
-Crear una función: ``func princesaMasCercana(ArbolN<Personaje>: arbol): string`` que encuentre el nombre de una princesa lo más cerca posible de la raíz de A.
+Crear una función: 
+``func princesaMasCercana(ArbolN<Personaje>: arbol): string``
+ que encuentre el nombre de una princesa lo más cerca posible de la raíz de A.
 >Suponiendo que algún nodo accesible de la raíz contiene una princesa. A lo sumo O(n). UTILICE APUNTADORES.
 
 ``` Pesudocodigo
@@ -567,6 +571,7 @@ endfunc
 ```
 
 ### Recorrido por niveles en zigzag
+``func ArbolN<int>::Zigzag(): Lista<int>``
 ``` Pseudocodigo
 func ArbolN<int>::Zigzag(): Lista<int>
 	var
@@ -612,5 +617,148 @@ func ArbolN<int>::Zigzag(): Lista<int>
 		    colaBool.desencolar() 
 		endwhile
 		return result
+endfunc
+```
+### Lowest Common Ancestor
+`func ArbolBin<Element>::lca(Element: a, b): Element`
+```
+func ArbolBin<Element>::lca(Element: a, b): Element
+	Var
+		bool: foundA, foundB, lcaSet
+		Element: result
+	Begin
+		foundA <- false
+		foundB <- false
+		lcaSet <- false
+		result <- NULL
+		instance.lca(instance.nodoRaiz, a, b, foundA, foundB, lcaSet, result)
+
+		if foundA ^ foundB then
+			return result
+		endif
+
+		// Si no existen ambos nodos en el arbol, retorna NULL.
+		return NULL
+endfunc
+proc ArbolBin<Element>::lca(pointer to NodoBin<Element>: ptr, Element: a, b, ref bool: foundA, foundB, lcaSet, ref Element: result)
+	Var
+		bool: foundAHi, foundAHd, foundBHi, foundBHd
+	Begin
+		if ptr then
+			if ¬ptr->getHijoIzq() ^ ¬ptr->getHijoDer() then
+				foundA <- ptr->getInfo() = a
+				foundB <- ptr->getInfo() = b
+			else
+				if ¬foundA v ¬foundB then
+					foundAHi <- false
+					foundAHd <- false
+					foundBHi <- false
+					foundBHd <- false
+
+					// Procesar Hijos
+					instance.lca(ptr->getHijoIzq(), a, b, foundAHi, foundBHi, lcaSet, result)
+					if ¬foundAHi v ¬foundBHi then
+						instance.lca(ptr->getHijoDer(), a, b, foundAHd, foundBHd, lcaSet, result)
+					endif
+					
+					// Procesar Raiz
+					foundA <- foundAHi v foundAHd v ptr->getInfo() = a
+					foundB <- foundBHi v foundBHd v ptr->getInfo() = b
+
+					if foundA ^ foundB ^ ¬lcaSet then
+						result <- ptr->getInfo()
+						lcaSet <- true
+					endif
+				endif
+			endif
+		endif
+endproc
+```
+*Version simplificada*
+*Corrida en frio*
+Arbol de ejemplo:
+```
+		  A
+		/   \
+	  B     C
+	 / \   / \
+	D   E F   G
+```
+Caso: `lca(D, E)`
+
+1. `lcaPtr(A, D, E)`:
+	- `A` no es `D` ni `E`.
+	- Llama a izquierda y derecha.
+
+2. `lcaPtr(B, D, E)`:
+	- `B` no es `D` ni `E`.
+	- Llama a izquierda y derecha.
+
+3. `lcaPtr(D, D, E)`:
+	- Coincide con `D`.
+	- Retorna puntero a `D`.
+
+4. `lcaPtr(E, D, E)`:
+	- Coincide con `E`.
+	- Retorna puntero a `E`.
+
+5. Regreso a `B`:
+	- `izq` retorna `D`, `der` retorna `E`.
+	- Como ambos retornan no nulo, `B` es LCA.
+	- Retorna puntero a `B`.
+
+6. `lcaPtr(C, D, E)`:
+	- No encuentra `D` ni `E` en ese subarbol.
+	- Retorna `NULL`.
+
+7. Regreso a `A`:
+	- `izq` retorna `B`, `der` retorna `NULL`.
+	- Como solo uno es no nulo, propaga `B`.
+
+Resultado final:
+- `ptrLca` apunta a `B`.
+- `lca(D, E)` retorna `B`.
+
+Caso rapido adicional: `lca(D, G)`
+1. Izquierda de `A` retorna `D`.
+2. Derecha de `A` retorna `G`.
+3. En `A`, ambos lados no nulos -> `A` es LCA.
+
+```
+func ArbolBin<Element>::lca(Element: a, b): Element
+    Var
+        pointer to NodoBin<Element>: ptrLca
+    Begin
+        ptrLca <- instance.lcaPtr(instance.nodoRaiz, a, b)
+        if ptrLca then
+            return ptrLca->getInfo()
+        endif
+        return NULL
+endfunc
+
+func ArbolBin<Element>::lcaPtr(pointer to NodoBin<Element>: ptr, Element: a, b): pointer to NodoBin<Element>
+    Var
+        pointer to NodoBin<Element>: izq, der
+    Begin
+        if ¬ptr then
+            return NULL
+        endif
+
+        if ptr->getInfo() = a v ptr->getInfo() = b then
+            return ptr
+        endif
+
+        izq <- instance.lcaPtr(ptr->getHijoIzq(), a, b)
+        der <- instance.lcaPtr(ptr->getHijoDer(), a, b)
+
+        if izq ^ der then
+            return ptr
+        endif
+
+        if izq then
+            return izq
+        endif
+
+        return der
 endfunc
 ```
