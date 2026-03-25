@@ -20,8 +20,8 @@ base:
 - En árboles n-arios usar representación hijo-izquierdo/hermano-derecho.
 - Si el enunciado exige punteros: recorrer con `pointer to Nodo...` y `->`.
 - Si el enunciado prohíbe punteros: resolver con TADs (`ArbolBin`, `ArbolN`, `Lista`, `Cola`, `Pila`) y getters.
-
-## PreOrden:
+## Recorridos Arboles N-arios
+### PreOrden (N-ario):
 1. Procesar Raíz
 2. Procesar hijos en PreOrden (y hermanos)
 $$PreOrden = [A, B, E, F, G, H, C, I, D, J, L , K]$$
@@ -51,7 +51,7 @@ func ArbolN<Element>::preOrden(pointer to NodoN<Element>: ptr, ref Lista<Element
 		endif
 endfunc
 ```
-## PostOrden:
+### PostOrden (N-ario):
 1. Procesar hijos en PostOrden (y hermanos)
 2. Procesar raíz
 $$PostOrden = [E,F,G,H,B,I,C,L,J,K,D,A]$$
@@ -81,7 +81,7 @@ func ArbolN<Element>::postOrden(pointer to NodoN<Element>: ptr, ref Lista<Elemen
 		endif
 endfunc
 ```
-## InOrden:
+### InOrden (N-ario):
 1. Procesar primer hijo
 2. Procesar raíz
 3. Procesar resto de hijos en InOrden
@@ -118,7 +118,7 @@ proc ArbolN<Element>::inOrden(pointer to NodoN<Element>: ptr, ref Lista<Element>
 		endif
 endproc
 ```
-## Por Niveles:
+### Por Niveles (N-ario):
 Recorrido de árbol por niveles
 ``` Pseudocodigo
 func ArbolN<Element>::porNiveles(): Lista<Element>
@@ -148,6 +148,112 @@ func ArbolN<Element>::porNiveles(): Lista<Element>
 		return result
 endfunc
 ```
+
+## Recorridos en árboles binarios
+### PreOrden (Binario)
+1. Procesar raíz
+2. Procesar subárbol izquierdo
+3. Procesar subárbol derecho
+``` Pseudocodigo
+func ArbolBin<Element>::preOrden(): Lista<Element>
+	Var
+		Lista<Element>: result
+	Begin
+		result.construir()
+		instance.preOrden(instance.nodoRaiz, result)
+		return result
+endfunc
+
+proc ArbolBin<Element>::preOrden(pointer to NodoBin<Element>: ptr, ref Lista<Element>: result)
+	Begin
+		if ptr then
+			result.insertar(ptr->getInfo(), result.getLong() + 1)
+			instance.preOrden(ptr->getHijoIzq(), result)
+			instance.preOrden(ptr->getHijoDer(), result)
+		endif
+endproc
+```
+
+### InOrden (Binario)
+1. Procesar subárbol izquierdo
+2. Procesar raíz
+3. Procesar subárbol derecho
+``` Pseudocodigo
+func ArbolBin<Element>::inOrden(): Lista<Element>
+	Var
+		Lista<Element>: result
+	Begin
+		result.construir()
+		instance.inOrden(instance.nodoRaiz, result)
+		return result
+endfunc
+
+proc ArbolBin<Element>::inOrden(pointer to NodoBin<Element>: ptr, ref Lista<Element>: result)
+	Begin
+		if ptr then
+			instance.inOrden(ptr->getHijoIzq(), result)
+			result.insertar(ptr->getInfo(), result.getLong() + 1)
+			instance.inOrden(ptr->getHijoDer(), result)
+		endif
+endproc
+```
+
+### PostOrden (Binario)
+1. Procesar subárbol izquierdo
+2. Procesar subárbol derecho
+3. Procesar raíz
+``` Pseudocodigo
+func ArbolBin<Element>::postOrden(): Lista<Element>
+	Var
+		Lista<Element>: result
+	Begin
+		result.construir()
+		instance.postOrden(instance.nodoRaiz, result)
+		return result
+endfunc
+
+proc ArbolBin<Element>::postOrden(pointer to NodoBin<Element>: ptr, ref Lista<Element>: result)
+	Begin
+		if ptr then
+			instance.postOrden(ptr->getHijoIzq(), result)
+			instance.postOrden(ptr->getHijoDer(), result)
+			result.insertar(ptr->getInfo(), result.getLong() + 1)
+		endif
+endproc
+```
+
+### Por Niveles (Binario)
+Recorrido BFS de izquierda a derecha
+``` Pseudocodigo
+func ArbolBin<Element>::porNiveles(): Lista<Element>
+	Var
+		Cola<pointer to NodoBin<Element>>: colaAux
+		Lista<Element>: result
+		pointer to NodoBin<Element>: ptr
+	Begin
+		result.construir()
+		colaAux.construir()
+		if ¬instance.nodoRaiz then
+			return result
+		endif
+
+		colaAux.encolar(instance.nodoRaiz)
+		while ¬colaAux.esVacia() do
+			ptr <- colaAux.getFrente()
+			colaAux.desencolar()
+			result.insertar(ptr->getInfo(), result.getLong() + 1)
+
+			if ptr->getHijoIzq() then
+				colaAux.encolar(ptr->getHijoIzq())
+			endif
+			if ptr->getHijoDer() then
+				colaAux.encolar(ptr->getHijoDer())
+			endif
+		endwhile
+		return result
+endfunc
+```
+
 # Ejercicios Arboles
 ## Parcial 1-2024
 ### Ejercicio 1: Suma Interna
@@ -560,7 +666,7 @@ func ArbolN<int>::getMaxLevel(): Lista<int>
         return result
 endfunc
 ```
-### Ejercicio 2: camino entre u y v
+### Ejercicio 2: esta en camino entre u y v
 Dado un nodo x y dos nodos u y v, queremos determinar si el nodo x pertenece al único camino entre u y v.
 ``func ArbolBin<int>::estaEnCamino(x: int, u: int, v: int): bool``
 que devuelva true si el nodo x está en el camino entre u y v, y false en caso contrario. 
@@ -753,8 +859,8 @@ que devuelva true si el nodo con valor x es el LCA de los nodos con valores u y 
 ```Pseudocodigo
 func ArbolBin<int>::esLCA(int: x, u, v): bool
 	Var
-		pointer to NodoBin<int>: ptr
-		bool: boolAux, boolIzq, boolDer
+		pointer to NodoBin<int>: ptr, uEnX, vEnX
+		bool: boolAux, boolIzq, boolDer, ambosIzq, ambosDer
 	Begin
 		ptr <- instance.buscarNodo(instance.nodoRaiz, x)
 		if ¬ptr then
@@ -772,13 +878,13 @@ func ArbolBin<int>::esLCA(int: x, u, v): bool
 		endif
 
 		ambosIzq <- instance.contiene(ptr->getHijoIzq(), u) ^ instance.contiene(ptr->getHijoIzq(), v)
-		ambosIzq <- instance.contiene(ptr->getHijoDer(), u) ^ instance.contiene(ptr->getHijoDer(), v)
+		ambosDer <- instance.contiene(ptr->getHijoDer(), u) ^ instance.contiene(ptr->getHijoDer(), v)
 
-		return  ¬ambosIzq ^ ¬ambosDer
+		return ¬ambosIzq ^ ¬ambosDer
 endfunc
 func ArbolBin<int>::buscarNodo(pointer to NodoBin<int>: ptr, int: a): pointer to NodoBin<int>
 	Var
-		pointer to NodoBin<int>: izq
+		pointer to NodoBin<int>: izq, der
 	Begin
 		if ¬ptr then
 			return NULL
@@ -809,6 +915,136 @@ func ArbolBin<int>::contiene(pointer to NodoBin<int>: ptr, int a): bool
 
 		return instance.contiene(ptr->getHijoIzq(), a) v instance.contiene(ptr->getHijoDer(), a)
 endfunc
+```
+## Parcial 2-2025 mod3
+### Ejercicio 1: nivel con promedio maximo
+Dado un árbol n-ario. Implemente el método:
+``func ArbolN<int>::getLevelWithMaxAverage(): Lista<int>``
+Que devuelva la lista de elementos que conforman el nivel cuya media aritmética (promedio) de sus elementos sea máxima. 
+>La solución debe ser a lo sumo O(n) y DEBE USAR APUNTADORES.
+```
+func ArbolN<int>::getLevelWithMaxAverage(): Lista<int>
+	Var
+		Cola<pointer to NodoN<int>>: colaAux
+		Lista<int>: nivelAux, result
+		pointer to NodoN<int>: ptr, hijo
+		int: promNivel, sumNivel, max, tamNivel
+	Begin
+		colaAux.construir()
+		nivelAux.construir()
+		result.construir()
+		max <- -inf
+
+		colaAux.encolar(instance.nodoRaiz)
+		while ¬colaAux.esVacia() do
+			sumNivel <- 0
+			nivelAux.vaciar()
+			tamNivel <- colaAux->getLong()
+			for i <- 1 to tamNivel do
+				// Procesar Raiz
+				ptr <- colaAux.getFrente()
+				colaAux.desencolar()
+				sumNivel <- sumNivel + ptr->getInfo()
+				nivelAux.insertar(ptr->getInfo(), nivelAux.getLong() +1)
+
+				// Procesar Hijos
+				hijo <- ptr->getHijoIzq()
+				while hijo do
+					colaAux.encolar(hijo)
+					hijo <- hijo->getHnoDer()
+				endwhile
+			endfor
+			
+			// Procesar Nivel
+			promNivel <- sumNivel / tamNivel
+			if promNivel > max then
+				max <- promNivel
+				result.vaciar()
+				while ¬nivelAux.esVacia() do
+					result.insertar(nivelAux.consultar(1), result.getLong() +1)
+					nivelAux.eliminar(1)
+				endwhile
+			endif
+		endwhile
+
+		return result
+endfunc
+
+```
+### Ejercicio 2: profundidad de ancenstro común más bajo
+Se tiene un árbol binario con nodos que contienen valores enteros. Dado dos nodos u y v, queremos determinar la profundidad (nivel) de su ancestro común más cercano (LCA). Implemente el método:
+``func ArbolBin<int>::profundidadLCA(int: u, v): int``
+que devuelva el nivel en el que se encuentra el LCA de u y v. Tenga en cuenta que la raíz está en el nivel 0 y si alguno de los nodos no existe, devolver -1. 
+>La solución debe ser a lo sumo O(n) y DEBE USAR APUNTADORES.
+```
+func ArbolBin<int>::profundidadLCA(int: u, v): int
+	Var
+		pointer to NodoBin<int>: ptrLca
+		bool: foundU, foundV
+		int: profundidad
+	Begin
+		foundU <- false
+		foundV <- false
+		ptrLca <- NULL
+		profundidad <- -1
+
+		instance.buscarLca(instance.nodoRaiz, u, v, foundU, foundV, ptrLca)
+		if foundU ^ foundV ^ ptrLca then
+			instance.buscarProfundidad(instance.nodoRaiz, ptrLca, 0, profundidad)
+		endif
+
+		return nivel
+endfunc
+func ArbolBin<int>::buscarLca(pointer to NodoBin<int>: ptr, int: u, v, ref bool: foundU, foundV, ref pointer to NodoBin<int>: salida)
+	Var
+		pointer to NodoBin<int>: izq, der
+		bool: foundUI, foundUD, foundVI, foundVD
+	Begin
+		izq <- NULL
+		der <- NULL
+		
+		if ptr then
+			foundUI <- false
+			foundUD <- false
+			foundVI <- false
+			foundVD <- false
+
+			// Buscar por cada lado del subarbol
+			instance.buscarLca(ptr->getHijoIzq(), u, v, foundUI, foundVI, salida)
+			isntance.buscarLca(ptr->getHijoDer(), u, v, foundUD, foundVD, salida)
+
+			// Verificar si lo encontro en algun lado
+			foundU <- foundUI v foundUD v (ptr->getInfo() = u)
+			foundV <- foundVI v foundVD v (ptr->getInfo() = v)
+
+			if izq ^ der then
+				salida <- ptr
+			else
+				if ptr->getInfo() = u v ptr->getInfo() = v then
+					salida <- ptr
+				else
+					if izq then
+						salida <- izq
+					else
+						salida <- der
+					endif
+				endif
+			endif
+		endif
+endproc
+proc ArbolBin<int>::buscarProfundidad(pointer to NodoBin<int>: ptr, objetivo, int: nivel, ref int: salida)
+	Var
+
+	Begin
+		if ptr ^ salida = -1 then
+			if ptr = objetivo then
+				salida <- nivel
+			else
+				instance.buscarProfundidad(ptr->getHijoIzq(), objetivo, nivel+1, salida)
+				instance.buscarProfundidad(ptr->getHijoDer(), objetivo, nivel+1, salida)
+			endif
+		endif
+endproc
 ```
 ## Ejercicios Varios
 ### Obtener primos
