@@ -3,10 +3,10 @@
 CXX := g++
 CXXFLAGS := -std=c++98 -O2 -Wall -Wextra -Wpedantic
 INCLUDES := -Iinclude
-SRC_DIR := talleres
+SRC_DIR ?= ejercicios_arboles
 BIN_DIR := bin
 OUTPUT_MODE := fixed
-FIXED_OUTPUT_NAME := lpc
+FIXED_OUTPUT_NAME ?= arboles
 BUILD_SCOPE := one
 
 ifeq ($(OS),Windows_NT)
@@ -22,8 +22,8 @@ endif
 SOURCES := $(wildcard $(SRC_DIR)/*.cpp)
 TARGETS := $(patsubst $(SRC_DIR)/%.cpp,$(BIN_DIR)/%$(EXE_EXT),$(SOURCES))
 
-EX ?= 1-2026_asamblea
-DATA_DIR ?= talleres
+EX ?= 90_test_clases_arboles
+DATA_DIR ?= talleres_arboles
 IN ?= $(DATA_DIR)/in.txt
 OUT ?= $(DATA_DIR)/out.txt
 
@@ -82,14 +82,15 @@ clean:
 help:
 	@echo "Comandos disponibles:"
 	@echo "  Edita OUTPUT_MODE := ex o OUTPUT_MODE := fixed"
-	@echo "  Edita FIXED_OUTPUT_NAME := lpc, arboles, etc."
+	@echo "  Edita FIXED_OUTPUT_NAME := arboles, pruebas, etc."
 	@echo "  Edita BUILD_SCOPE := one o BUILD_SCOPE := all"
+	@echo "  Edita SRC_DIR := ejercicios_arboles, ejercicios_lpc, talleres_lpc, etc."
 	@echo "  make all"
-	@echo "  make one EX=09_longest_zigzag"
-	@echo "  make run EX=09_longest_zigzag"
-	@echo "  make run-file EX=09_longest_zigzag"
-	@echo "  make run-file EX=09_longest_zigzag DATA_DIR=talleres"
-	@echo "  make run-file EX=09_longest_zigzag IN=talleres/caso.txt OUT=talleres/resultado.txt"
+	@echo "  make one EX=90_test_clases_arboles SRC_DIR=ejercicios_arboles"
+	@echo "  make run EX=90_test_clases_arboles SRC_DIR=ejercicios_arboles"
+	@echo "  make run EX=91_test_ejercicios_arboles SRC_DIR=ejercicios_arboles"
+	@echo "  make run-file EX=1-2024_puma SRC_DIR=talleres_lpc DATA_DIR=talleres_lpc"
+	@echo "  make run-file EX=1-2024_puma SRC_DIR=talleres_lpc IN=talleres_lpc/in_1-2024.txt OUT=talleres_lpc/out.tmp.txt"
 	@echo "  En modo ex genera bin/nombre_del_archivo$(EXE_EXT)"
 	@echo "  En modo fixed genera bin/nombre_fijo$(EXE_EXT) usando el .cpp indicado en EX"
 	@echo "  En modo one, make compila solo EX"
