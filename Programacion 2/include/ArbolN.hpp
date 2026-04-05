@@ -210,26 +210,26 @@ private:
         }
     }
 
-    bool buscarRutaRec(NodoN<T>* ptr, const T& x, vector<NodoN<T>*>& ruta) const {
-        if (!ptr) {
-            return false;
+    void buscarRutaRec(NodoN<T>* ptr, const T& x, Lista<NodoN<T>*>& ruta, bool& found) const {
+        if (!ptr || found) {
+            return;
         }
 
-        ruta.push_back(ptr);
+        ruta.insertar(ptr, ruta.getLong() + 1);
         if (ptr->getInfo() == x) {
-            return true;
+            found = true;
+            return;
         }
 
         NodoN<T>* hijo = ptr->getHijoIzq();
-        while (hijo) {
-            if (buscarRutaRec(hijo, x, ruta)) {
-                return true;
-            }
+        while (hijo && !found) {
+            buscarRutaRec(hijo, x, ruta, found);
             hijo = hijo->getHnoDer();
         }
 
-        ruta.pop_back();
-        return false;
+        if (!found) {
+            ruta.eliminar(ruta.getLong());
+        }
     }
 
     string trim(const string& s) const {
@@ -731,33 +731,38 @@ public:
      */
     Lista<T> camino(const T& n, const T& m) const {
         Lista<T> result;
-        vector<NodoN<T>*> rutaN;
-        vector<NodoN<T>*> rutaM;
+        Lista<NodoN<T>*> rutaN;
+        Lista<NodoN<T>*> rutaM;
+        NodoN<T>* ancestro = NULL;
 
-        bool foundN = buscarRutaRec(nodoRaiz, n, rutaN);
-        bool foundM = buscarRutaRec(nodoRaiz, m, rutaM);
+        bool found = false;
+        buscarRutaRec(nodoRaiz, n, rutaN, found);
 
-        if (!foundN || !foundM) {
+        found = false;
+        buscarRutaRec(nodoRaiz, m, rutaM, found);
+
+        if (rutaN.esVacia() || rutaM.esVacia()) {
             return result;
         }
 
-        int i = 0;
-        int minLen = (rutaN.size() < rutaM.size()) ? static_cast<int>(rutaN.size()) : static_cast<int>(rutaM.size());
-        while (i < minLen && rutaN[i] == rutaM[i]) {
-            ++i;
+        while (!rutaN.esVacia() && !rutaM.esVacia() && rutaN.consultar(1) == rutaM.consultar(1)) {
+            ancestro = rutaN.consultar(1);
+            rutaN.eliminar(1);
+            rutaM.eliminar(1);
         }
 
-        int idxAncestro = i - 1;
-        if (idxAncestro < 0) {
-            return result;
+        while (!rutaN.esVacia()) {
+            result.insertar(rutaN.consultar(1)->getInfo(), 1);
+            rutaN.eliminar(1);
         }
 
-        for (int j = static_cast<int>(rutaN.size()) - 1; j >= idxAncestro; --j) {
-            result.insertar(rutaN[j]->getInfo(), result.getLong() + 1);
+        if (ancestro) {
+            result.insertar(ancestro->getInfo(), result.getLong() + 1);
         }
 
-        for (int j = idxAncestro + 1; j < static_cast<int>(rutaM.size()); ++j) {
-            result.insertar(rutaM[j]->getInfo(), result.getLong() + 1);
+        while (!rutaM.esVacia()) {
+            result.insertar(rutaM.consultar(1)->getInfo(), result.getLong() + 1);
+            rutaM.eliminar(1);
         }
 
         return result;
@@ -889,7 +894,7 @@ public:
         Cola<NodoN<T>*> colaAux;
         colaAux.encolar(nodoRaiz);
 
-        double maxProm = -1e100;
+        int maxProm = INT_MIN;
 
         while (!colaAux.esVacia()) {
             int tamNivel = colaAux.getLong();
@@ -911,9 +916,9 @@ public:
                 }
             }
 
-            double prom = static_cast<double>(sumaNivel) / static_cast<double>(tamNivel);
-            if (prom > maxProm) {
-                maxProm = prom;
+            int promNivel = sumaNivel / tamNivel;
+            if (promNivel > maxProm) {
+                maxProm = promNivel;
                 result = nivelAux;
             }
         }
@@ -933,37 +938,45 @@ public:
 
         Cola<NodoN<T>*> colaAux;
         colaAux.encolar(nodoRaiz);
-        bool izqDer = true;
+        bool esIzqDer = true;
 
         while (!colaAux.esVacia()) {
             int tamNivel = colaAux.getLong();
-            vector<int> nivel;
-            nivel.reserve(static_cast<size_t>(tamNivel));
+            if (esIzqDer) {
+                for (int i = 1; i <= tamNivel; ++i) {
+                    NodoN<T>* ptr = colaAux.getFrente();
+                    colaAux.desencolar();
 
-            for (int i = 1; i <= tamNivel; ++i) {
-                NodoN<T>* ptr = colaAux.getFrente();
-                colaAux.desencolar();
+                    result.insertar(static_cast<int>(ptr->getInfo()), result.getLong() + 1);
 
-                nivel.push_back(static_cast<int>(ptr->getInfo()));
-
-                NodoN<T>* hijo = ptr->getHijoIzq();
-                while (hijo) {
-                    colaAux.encolar(hijo);
-                    hijo = hijo->getHnoDer();
-                }
-            }
-
-            if (izqDer) {
-                for (size_t i = 0; i < nivel.size(); ++i) {
-                    result.insertar(nivel[i], result.getLong() + 1);
+                    NodoN<T>* hijo = ptr->getHijoIzq();
+                    while (hijo) {
+                        colaAux.encolar(hijo);
+                        hijo = hijo->getHnoDer();
+                    }
                 }
             } else {
-                for (int i = static_cast<int>(nivel.size()) - 1; i >= 0; --i) {
-                    result.insertar(nivel[static_cast<size_t>(i)], result.getLong() + 1);
+                Pila<int> pilaAux;
+                for (int i = 1; i <= tamNivel; ++i) {
+                    NodoN<T>* ptr = colaAux.getFrente();
+                    colaAux.desencolar();
+
+                    pilaAux.apilar(static_cast<int>(ptr->getInfo()));
+
+                    NodoN<T>* hijo = ptr->getHijoIzq();
+                    while (hijo) {
+                        colaAux.encolar(hijo);
+                        hijo = hijo->getHnoDer();
+                    }
+                }
+
+                while (!pilaAux.esVacia()) {
+                    result.insertar(pilaAux.getTope(), result.getLong() + 1);
+                    pilaAux.desapilar();
                 }
             }
 
-            izqDer = !izqDer;
+            esIzqDer = !esIzqDer;
         }
 
         return result;

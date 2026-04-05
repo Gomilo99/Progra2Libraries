@@ -178,6 +178,8 @@ void probarArbolNClase() {
     a.vaciar();
     assert(a.esNulo());
 
+    a.imprimirJerarquico();
+
     copia.destruir();
     assert(copia.esNulo());
 }
