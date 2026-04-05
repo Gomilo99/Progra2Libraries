@@ -1,5 +1,6 @@
 #include <iostream>
 #include <cassert>
+#include <sstream>
 #include "ArbolBin.hpp"
 #include "ArbolN.hpp"
 
@@ -27,6 +28,15 @@ void assertListaEq(const Lista<T>& lista, const T* expected, int n, const char* 
     for (int i = 1; i <= n; ++i) {
         assert(lista.consultar(i) == expected[i - 1] && msg);
     }
+}
+
+template <typename T>
+Lista<T> listaDesdeArreglo(const T* elems, int n) {
+    Lista<T> out;
+    for (int i = 0; i < n; ++i) {
+        out.insertar(elems[i], out.getLong() + 1);
+    }
+    return out;
 }
 
 void probarArbolBinClase() {
@@ -57,6 +67,22 @@ void probarArbolBinClase() {
     assertListaEq(a.postOrden(), post, 6, "postorden binario");
     assertListaEq(a.porNiveles(), niv, 6, "niveles binario");
     assertListaEq(a.getHojas(), hojas, 3, "hojas binario");
+
+    Lista<int> inL = listaDesdeArreglo(in, 6);
+    Lista<int> preL = listaDesdeArreglo(pre, 6);
+    Lista<int> postL = listaDesdeArreglo(post, 6);
+
+    ArbolBin<int> desdeInPre(inL, preL, true);
+    assert(desdeInPre.getPeso() == 6);
+    assertListaEq(desdeInPre.preOrden(), pre, 6, "reconstruccion in+pre");
+
+    ArbolBin<int> desdeInPost;
+    desdeInPost.construirDesdeInYPost(inL, postL);
+    assert(desdeInPost.getPeso() == 6);
+    assertListaEq(desdeInPost.postOrden(), post, 6, "reconstruccion in+post");
+
+    desdeInPre.imprimirRotado();
+    desdeInPre.imprimirPorNiveles();
 
     ArbolBin<int> hi = a.getHijoIzq();
     assert(hi.getRaiz() == 2);
@@ -111,6 +137,29 @@ void probarArbolNClase() {
     assertListaEq(a.postOrden(), post, 8, "postorden n-ario");
     assertListaEq(a.porNiveles(), niv, 8, "niveles n-ario");
     assertListaEq(a.getHojas(), hojas, 4, "hojas n-ario");
+
+    const char* relacionesStdin =
+        "1, 2\n"
+        "1, 3\n"
+        "1, 4\n"
+        "2, 5\n"
+        "2, 6\n"
+        "3, 7\n"
+        "4, 8\n";
+
+    istringstream flujoRelaciones(relacionesStdin);
+    ArbolN<int> desdeEntrada(flujoRelaciones);
+    assert(desdeEntrada.getRaiz() == 1);
+    assert(desdeEntrada.getPeso() == 8);
+    assertListaEq(desdeEntrada.preOrden(), pre, 8, "construccion stdin");
+
+    istringstream flujoRelaciones2(relacionesStdin);
+    ArbolN<int> desdeMetodo;
+    desdeMetodo.construirDesdeEntradaEstandar(flujoRelaciones2);
+    assertListaEq(desdeMetodo.preOrden(), pre, 8, "construccion metodo stdin");
+
+    desdeEntrada.imprimirJerarquico();
+    desdeEntrada.imprimirPorNiveles();
 
     Lista<ArbolN<int> > hijos = a.getHijos();
     assert(hijos.getLong() == 3);

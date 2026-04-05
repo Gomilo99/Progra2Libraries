@@ -5,7 +5,7 @@ CXXFLAGS := -std=c++98 -O2 -Wall -Wextra -Wpedantic
 INCLUDES := -Iinclude
 SRC_DIR ?= ejercicios_arboles
 BIN_DIR := bin
-OUTPUT_MODE := fixed
+OUTPUT_MODE := ex
 FIXED_OUTPUT_NAME ?= arboles
 BUILD_SCOPE := one
 

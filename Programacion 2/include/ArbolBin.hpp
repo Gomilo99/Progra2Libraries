@@ -1,6 +1,7 @@
 #ifndef ARBOLBIN_HPP
 #define ARBOLBIN_HPP
 
+#include <iostream>
 #include <stdexcept>
 #include "Lista.hpp"
 #include "Cola.hpp"
@@ -53,6 +54,97 @@ class ArbolBin {
 private:
     NodoBin<T>* nodoRaiz;
     int peso;
+
+    int buscarPosEnRango(const Lista<T>& lista, int ini, int fin, const T& valor) const {
+        for (int i = ini; i <= fin; ++i) {
+            if (lista.consultar(i) == valor) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    NodoBin<T>* construirDesdeInPreRec(
+        const Lista<T>& inOrdenRec,
+        int inL,
+        int inR,
+        const Lista<T>& preOrdenRec,
+        int& preIdx) {
+        if (inL > inR) {
+            return NULL;
+        }
+
+        if (preIdx > preOrdenRec.getLong()) {
+            throw invalid_argument("Recorrido preorden incompleto");
+        }
+
+        T raizValor = preOrdenRec.consultar(preIdx);
+        ++preIdx;
+
+        int mid = buscarPosEnRango(inOrdenRec, inL, inR, raizValor);
+        if (mid == -1) {
+            throw invalid_argument("Recorridos inorden/preorden inconsistentes");
+        }
+
+        NodoBin<T>* nodo = new NodoBin<T>(raizValor);
+
+        try {
+            nodo->setHijoIzq(construirDesdeInPreRec(inOrdenRec, inL, mid - 1, preOrdenRec, preIdx));
+            nodo->setHijoDer(construirDesdeInPreRec(inOrdenRec, mid + 1, inR, preOrdenRec, preIdx));
+        } catch (...) {
+            destruirSubarbol(nodo);
+            throw;
+        }
+
+        return nodo;
+    }
+
+    NodoBin<T>* construirDesdeInPostRec(
+        const Lista<T>& inOrdenRec,
+        int inL,
+        int inR,
+        const Lista<T>& postOrdenRec,
+        int& postIdx) {
+        if (inL > inR) {
+            return NULL;
+        }
+
+        if (postIdx < 1) {
+            throw invalid_argument("Recorrido postorden incompleto");
+        }
+
+        T raizValor = postOrdenRec.consultar(postIdx);
+        --postIdx;
+
+        int mid = buscarPosEnRango(inOrdenRec, inL, inR, raizValor);
+        if (mid == -1) {
+            throw invalid_argument("Recorridos inorden/postorden inconsistentes");
+        }
+
+        NodoBin<T>* nodo = new NodoBin<T>(raizValor);
+
+        try {
+            nodo->setHijoDer(construirDesdeInPostRec(inOrdenRec, mid + 1, inR, postOrdenRec, postIdx));
+            nodo->setHijoIzq(construirDesdeInPostRec(inOrdenRec, inL, mid - 1, postOrdenRec, postIdx));
+        } catch (...) {
+            destruirSubarbol(nodo);
+            throw;
+        }
+
+        return nodo;
+    }
+
+    void imprimirRotadoRec(NodoBin<T>* ptr, int nivel, ostream& os) const {
+        if (!ptr) {
+            return;
+        }
+        imprimirRotadoRec(ptr->getHijoDer(), nivel + 1, os);
+        for (int i = 0; i < nivel; ++i) {
+            os << "    ";
+        }
+        os << ptr->getInfo() << "\n";
+        imprimirRotadoRec(ptr->getHijoIzq(), nivel + 1, os);
+    }
 
     NodoBin<T>* copiarSubarbol(const NodoBin<T>* ptr) const {
         if (!ptr) {
@@ -216,6 +308,21 @@ public:
     ArbolBin() : nodoRaiz(NULL), peso(0) {}
 
     /**
+     * @brief Construye un arbol a partir de inorden y preorden/postorden.
+     * @param inOrdenRec Recorrido inorden.
+     * @param segundoRec Recorrido preorden o postorden.
+     * @param segundoEsPreorden true si segundoRec es preorden; false si es postorden.
+     */
+    ArbolBin(const Lista<T>& inOrdenRec, const Lista<T>& segundoRec, bool segundoEsPreorden)
+        : nodoRaiz(NULL), peso(0) {
+        if (segundoEsPreorden) {
+            construirDesdeInYPre(inOrdenRec, segundoRec);
+        } else {
+            construirDesdeInYPost(inOrdenRec, segundoRec);
+        }
+    }
+
+    /**
      * @brief Constructor de copia.
      * @param other Arbol origen.
      */
@@ -247,6 +354,154 @@ public:
      * @param a Arbol origen.
      */
     void construir(const ArbolBin<T>& a) { *this = a; }
+
+    /**
+     * @brief Reconstruye el arbol desde inorden y preorden.
+     * @param inOrdenRec Recorrido inorden.
+     * @param preOrdenRec Recorrido preorden.
+     * @throw invalid_argument Si los recorridos son invalidos.
+     */
+    void construirDesdeInYPre(const Lista<T>& inOrdenRec, const Lista<T>& preOrdenRec) {
+        int n = inOrdenRec.getLong();
+        if (n != preOrdenRec.getLong()) {
+            throw invalid_argument("Inorden y preorden deben tener el mismo tamano");
+        }
+
+        vaciar();
+        if (n == 0) {
+            return;
+        }
+
+        for (int i = 1; i <= n; ++i) {
+            T v = inOrdenRec.consultar(i);
+            for (int j = i + 1; j <= n; ++j) {
+                if (inOrdenRec.consultar(j) == v) {
+                    throw invalid_argument("No se admiten valores duplicados al reconstruir");
+                }
+            }
+        }
+
+        for (int i = 1; i <= n; ++i) {
+            T v = preOrdenRec.consultar(i);
+            if (buscarPosEnRango(inOrdenRec, 1, n, v) == -1) {
+                throw invalid_argument("Preorden contiene valores ausentes en inorden");
+            }
+            for (int j = i + 1; j <= n; ++j) {
+                if (preOrdenRec.consultar(j) == v) {
+                    throw invalid_argument("No se admiten valores duplicados al reconstruir");
+                }
+            }
+        }
+
+        int preIdx = 1;
+        nodoRaiz = construirDesdeInPreRec(inOrdenRec, 1, n, preOrdenRec, preIdx);
+        if (preIdx != n + 1) {
+            vaciar();
+            throw invalid_argument("Recorridos inorden/preorden inconsistentes");
+        }
+        peso = n;
+    }
+
+    /**
+     * @brief Reconstruye el arbol desde inorden y postorden.
+     * @param inOrdenRec Recorrido inorden.
+     * @param postOrdenRec Recorrido postorden.
+     * @throw invalid_argument Si los recorridos son invalidos.
+     */
+    void construirDesdeInYPost(const Lista<T>& inOrdenRec, const Lista<T>& postOrdenRec) {
+        int n = inOrdenRec.getLong();
+        if (n != postOrdenRec.getLong()) {
+            throw invalid_argument("Inorden y postorden deben tener el mismo tamano");
+        }
+
+        vaciar();
+        if (n == 0) {
+            return;
+        }
+
+        for (int i = 1; i <= n; ++i) {
+            T v = inOrdenRec.consultar(i);
+            for (int j = i + 1; j <= n; ++j) {
+                if (inOrdenRec.consultar(j) == v) {
+                    throw invalid_argument("No se admiten valores duplicados al reconstruir");
+                }
+            }
+        }
+
+        for (int i = 1; i <= n; ++i) {
+            T v = postOrdenRec.consultar(i);
+            if (buscarPosEnRango(inOrdenRec, 1, n, v) == -1) {
+                throw invalid_argument("Postorden contiene valores ausentes en inorden");
+            }
+            for (int j = i + 1; j <= n; ++j) {
+                if (postOrdenRec.consultar(j) == v) {
+                    throw invalid_argument("No se admiten valores duplicados al reconstruir");
+                }
+            }
+        }
+
+        int postIdx = n;
+        nodoRaiz = construirDesdeInPostRec(inOrdenRec, 1, n, postOrdenRec, postIdx);
+        if (postIdx != 0) {
+            vaciar();
+            throw invalid_argument("Recorridos inorden/postorden inconsistentes");
+        }
+        peso = n;
+    }
+
+    /**
+     * @brief Imprime el arbol en formato rotado (derecha-arriba, izquierda-abajo).
+     */
+    void imprimirRotado() const {
+        if (!nodoRaiz) {
+            cout << "(arbol vacio)";
+            return;
+        }
+        imprimirRotadoRec(nodoRaiz, 0, cout);
+    }
+
+    /**
+     * @brief Imprime el arbol por niveles.
+     */
+    void imprimirPorNiveles() const {
+        if (!nodoRaiz) {
+            cout << "(arbol vacio)";
+            return;
+        }
+
+        Cola<NodoBin<T>*> colaAux;
+        colaAux.encolar(nodoRaiz);
+        int nivel = 0;
+
+        while (!colaAux.esVacia()) {
+            int tamNivel = colaAux.getLong();
+            cout << "Nivel " << nivel << ": ";
+
+            for (int i = 1; i <= tamNivel; ++i) {
+                NodoBin<T>* ptr = colaAux.getFrente();
+                colaAux.desencolar();
+
+                cout << ptr->getInfo();
+                if (i < tamNivel) {
+                    cout << ", ";
+                }
+
+                if (ptr->getHijoIzq()) {
+                    colaAux.encolar(ptr->getHijoIzq());
+                }
+                if (ptr->getHijoDer()) {
+                    colaAux.encolar(ptr->getHijoDer());
+                }
+            }
+
+            if (!colaAux.esVacia()) {
+                cout << "\n";
+            }
+            ++nivel;
+        }
+
+        cout << "\n";
+    }
 
     /**
      * @brief Obtiene la informacion de la raiz.
@@ -423,9 +678,10 @@ public:
             return;
         }
 
-        if (ptrPadre->getHijoIzq() && ptrPadre->getHijoIzq()->getInfo() == e) {
-            int borrados = destruirSubarbol(ptrPadre->getHijoIzq());
+        NodoBin<T>* izq = ptrPadre->getHijoIzq();
+        if (izq && izq->getInfo() == e) {
             ptrPadre->setHijoIzq(NULL);
+            int borrados = destruirSubarbol(izq);
             peso -= borrados;
             if (peso < 0) {
                 peso = 0;
@@ -433,9 +689,10 @@ public:
             return;
         }
 
-        if (ptrPadre->getHijoDer() && ptrPadre->getHijoDer()->getInfo() == e) {
-            int borrados = destruirSubarbol(ptrPadre->getHijoDer());
+        NodoBin<T>* der = ptrPadre->getHijoDer();
+        if (der && der->getInfo() == e) {
             ptrPadre->setHijoDer(NULL);
+            int borrados = destruirSubarbol(der);
             peso -= borrados;
             if (peso < 0) {
                 peso = 0;

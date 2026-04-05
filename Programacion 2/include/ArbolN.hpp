@@ -2,8 +2,9 @@
 #define ARBOLN_HPP
 
 #include <string>
-#include <vector>
 #include <climits>
+#include <iostream>
+#include <sstream>
 #include <stdexcept>
 #include "Lista.hpp"
 #include "Cola.hpp"
@@ -231,9 +232,70 @@ private:
         return false;
     }
 
+    string trim(const string& s) const {
+        size_t ini = 0;
+        while (ini < s.size()) {
+            char c = s[ini];
+            if (c != ' ' && c != '\t' && c != '\n' && c != '\r') {
+                break;
+            }
+            ++ini;
+        }
+
+        size_t fin = s.size();
+        while (fin > ini) {
+            char c = s[fin - 1];
+            if (c != ' ' && c != '\t' && c != '\n' && c != '\r') {
+                break;
+            }
+            --fin;
+        }
+
+        return s.substr(ini, fin - ini);
+    }
+
+    bool tokenAValor(const string& token, T& valor) const {
+        istringstream in(token);
+        in >> valor;
+        if (!in) {
+            return false;
+        }
+
+        char extra = '\0';
+        if (in >> extra) {
+            return false;
+        }
+        return true;
+    }
+
+    void imprimirJerarquicoRec(NodoN<T>* ptr, int nivel, ostream& os) const {
+        if (!ptr) {
+            return;
+        }
+
+        for (int i = 0; i < nivel; ++i) {
+            os << "  ";
+        }
+        os << ptr->getInfo() << "\n";
+
+        NodoN<T>* hijo = ptr->getHijoIzq();
+        while (hijo) {
+            imprimirJerarquicoRec(hijo, nivel + 1, os);
+            hijo = hijo->getHnoDer();
+        }
+    }
+
 public:
     /** @brief Construye un arbol N-ario vacio. */
     ArbolN() : nodoRaiz(NULL), peso(0) {}
+
+    /**
+     * @brief Construye un arbol N-ario leyendo relaciones "padre, hijo" desde un flujo.
+     * @param entrada Flujo de entrada (por ejemplo cin o ifstream).
+     */
+    explicit ArbolN(istream& entrada) : nodoRaiz(NULL), peso(0) {
+        construirDesdeEntradaEstandar(entrada);
+    }
 
     /**
      * @brief Constructor de copia.
@@ -267,6 +329,147 @@ public:
      * @param a Arbol origen.
      */
     void construir(const ArbolN<T>& a) { *this = a; }
+
+    /**
+     * @brief Reconstruye el arbol leyendo relaciones "padre, hijo" desde entrada estandar.
+     *
+     * Tambien puede recibir cualquier flujo (por ejemplo istringstream)
+     * para pruebas o lecturas personalizadas.
+     *
+     * Esta version procesa linea por linea: busca el padre actual y enlaza el hijo.
+     * Por simplicidad, la entrada debe estar ordenada de forma que el padre ya exista
+     * al momento de leer cada relacion (la primera linea define la raiz).
+     *
+     * @param entrada Flujo con lineas en formato "padre, hijo".
+     * @throw invalid_argument Si el formato o las relaciones son invalidas.
+     */
+    void construirDesdeEntradaEstandar(istream& entrada = cin) {
+        vaciar();
+
+        string linea;
+        bool leyoRelaciones = false;
+
+        while (getline(entrada, linea)) {
+            string limpia = trim(linea);
+            if (limpia.empty()) {
+                continue;
+            }
+
+            size_t coma = limpia.find(',');
+            if (coma == string::npos || limpia.find(',', coma + 1) != string::npos) {
+                throw invalid_argument("Formato invalido: se esperaba 'padre, hijo'");
+            }
+
+            string tokPadre = trim(limpia.substr(0, coma));
+            string tokHijo = trim(limpia.substr(coma + 1));
+            if (tokPadre.empty() || tokHijo.empty()) {
+                throw invalid_argument("Formato invalido: padre o hijo vacio");
+            }
+
+            T padreVal;
+            T hijoVal;
+            if (!tokenAValor(tokPadre, padreVal) || !tokenAValor(tokHijo, hijoVal)) {
+                throw invalid_argument("No se pudo interpretar padre o hijo");
+            }
+
+            if (padreVal == hijoVal) {
+                throw invalid_argument("Relacion padre-hijo invalida: padre == hijo");
+            }
+
+            leyoRelaciones = true;
+
+            if (!nodoRaiz) {
+                nodoRaiz = new NodoN<T>(padreVal);
+                peso = 1;
+            }
+
+            NodoN<T>* ptrPadre = buscarNodoRec(nodoRaiz, padreVal);
+            if (!ptrPadre) {
+                vaciar();
+                throw invalid_argument("Padre no encontrado: la entrada debe venir ordenada");
+            }
+
+            if (buscarNodoRec(nodoRaiz, hijoVal) != NULL) {
+                vaciar();
+                throw invalid_argument("Nodo hijo duplicado o con multiples padres");
+            }
+
+            NodoN<T>* nuevoHijo = new NodoN<T>(hijoVal);
+            NodoN<T>* primerHijo = ptrPadre->getHijoIzq();
+            if (!primerHijo) {
+                ptrPadre->setHijoIzq(nuevoHijo);
+            } else {
+                NodoN<T>* ult = primerHijo;
+                while (ult->getHnoDer()) {
+                    ult = ult->getHnoDer();
+                }
+                ult->setHnoDer(nuevoHijo);
+            }
+            ++peso;
+        }
+
+        if (!entrada.eof()) {
+            vaciar();
+            throw invalid_argument("Error al leer la entrada de relaciones");
+        }
+
+        if (!leyoRelaciones) {
+            vaciar();
+        }
+    }
+
+    /**
+     * @brief Imprime el arbol en forma jerarquica.
+     */
+    void imprimirJerarquico() const {
+        if (!nodoRaiz) {
+            cout << "(arbol vacio)";
+            return;
+        }
+        imprimirJerarquicoRec(nodoRaiz, 0, cout);
+    }
+
+    /**
+     * @brief Imprime el arbol por niveles.
+     */
+    void imprimirPorNiveles() const {
+        if (!nodoRaiz) {
+            cout << "(arbol vacio)";
+            return;
+        }
+
+        Cola<NodoN<T>*> colaAux;
+        colaAux.encolar(nodoRaiz);
+        int nivel = 0;
+
+        while (!colaAux.esVacia()) {
+            int tamNivel = colaAux.getLong();
+            cout << "Nivel " << nivel << ": ";
+
+            for (int i = 1; i <= tamNivel; ++i) {
+                NodoN<T>* ptr = colaAux.getFrente();
+                colaAux.desencolar();
+
+                cout << ptr->getInfo();
+                if (i < tamNivel) {
+                    cout << ", ";
+                }
+
+                NodoN<T>* hijo = ptr->getHijoIzq();
+                while (hijo) {
+                    colaAux.encolar(hijo);
+                    hijo = hijo->getHnoDer();
+                }
+            }
+
+            if (!colaAux.esVacia()) {
+                cout << "\n";
+            }
+            ++nivel;
+        }
+
+        cout << "\n";
+    }
 
     /**
      * @brief Retorna la informacion de la raiz.
@@ -408,10 +611,11 @@ public:
         }
 
         NodoN<T>* nuevo = new NodoN<T>(e);
-        if (!ptrPadre->getHijoIzq()) {
+        NodoN<T>* primerHijo = ptrPadre->getHijoIzq();
+        if (!primerHijo) {
             ptrPadre->setHijoIzq(nuevo);
         } else {
-            NodoN<T>* hijo = ptrPadre->getHijoIzq();
+            NodoN<T>* hijo = primerHijo;
             while (hijo->getHnoDer()) {
                 hijo = hijo->getHnoDer();
             }
@@ -436,19 +640,29 @@ public:
             return;
         }
 
-        NodoN<T>* prev = NULL;
-        NodoN<T>* cur = ptrPadre->getHijoIzq();
+        NodoN<T>* primerHijo = ptrPadre->getHijoIzq();
+        if (primerHijo->getInfo() == e) {
+            NodoN<T>* borrar = primerHijo;
+            ptrPadre->setHijoIzq(borrar->getHnoDer());
+            borrar->setHnoDer(NULL);
+
+            int borrados = destruirSubarbol(borrar);
+            peso -= borrados;
+            if (peso < 0) {
+                peso = 0;
+            }
+            return;
+        }
+
+        NodoN<T>* prev = primerHijo;
+        NodoN<T>* cur = prev->getHnoDer();
 
         while (cur) {
             if (cur->getInfo() == e) {
                 NodoN<T>* sig = cur->getHnoDer();
+                cur->setHnoDer(NULL);
                 int borrados = destruirSubarbol(cur);
-
-                if (!prev) {
-                    ptrPadre->setHijoIzq(sig);
-                } else {
-                    prev->setHnoDer(sig);
-                }
+                prev->setHnoDer(sig);
 
                 peso -= borrados;
                 if (peso < 0) {
