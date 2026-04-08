@@ -40,9 +40,9 @@ ALL_TARGETS := one
 endif
 
 ifeq ($(OS),Windows_NT)
-RUN_EXE = .\\$(BIN_DIR)\\$(OUTPUT_NAME)$(EXE_EXT)
+RUN_EXE = ".\\$(BIN_DIR)\\$(OUTPUT_NAME)$(EXE_EXT)"
 else
-RUN_EXE = ./$(BIN_DIR)/$(OUTPUT_NAME)$(EXE_EXT)
+RUN_EXE = "./$(BIN_DIR)/$(OUTPUT_NAME)$(EXE_EXT)"
 endif
 
 .PHONY: all one run run-file list clean help
@@ -52,11 +52,11 @@ all: $(ALL_TARGETS)
 
 $(BIN_DIR)/%$(EXE_EXT): $(SRC_DIR)/%.cpp
 	@$(MKDIR_BIN)
-	$(CXX) $(CXXFLAGS) $(INCLUDES) $< -o $@
+	$(CXX) $(CXXFLAGS) $(INCLUDES) "$<" -o "$@"
 
 $(BIN_DIR)/$(FIXED_OUTPUT_NAME)$(EXE_EXT): $(SRC_DIR)/$(EX).cpp
 	@$(MKDIR_BIN)
-	$(CXX) $(CXXFLAGS) $(INCLUDES) $< -o $@
+	$(CXX) $(CXXFLAGS) $(INCLUDES) "$<" -o "$@"
 
 one: $(BIN_DIR)/$(OUTPUT_NAME)$(EXE_EXT)
 
