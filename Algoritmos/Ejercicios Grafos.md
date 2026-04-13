@@ -250,7 +250,63 @@ func existeArista(Matriz<int>: matriz, int: u, v): bool
 endfunc
 ```
 
-#### 
+#### Conteo del grado de un nodo
+Dado un grafo *no dirigido* representado mediante lista de adyacencia, calcule el **grado** de un nodo (cantidad de aristas/arcos incidentes)
+`func gradoNodo(Grafo<int>: grafo, int: v): int`
+>La solucion no debe utilizar apuntadores. Restringido a O(grado(v))
+
+```
+func gradoNodo(Grafo<int>: grafo, int: v): int
+	Var
+		int: actual
+	Begin
+		actual <- grafo.getPrimero()
+
+		while (actual != v) v 
+```
+#### Grafo dinámico simple
+Implemente la estructura **Grafo** que permita agregar nodos, dinamicamente y conectar nodos mediante aristas.
+`func Grafo<int>::agregarNodo(int: valor)`
+`proc Grafo<int>::agregarArista(int: a, b)`
+>Usar Apuntadores
+```
+func Grafo<int>::agregarNodo(int: valor)
+	Var
+		pointer to NodoVertice<int>: previo, nuevo
+	Begin
+		previo <- instance.verticeHead
+		nuevo <- new NodoVertice<int>
+		nuevo.setInfo(valor)
+
+		nuevo.setNext(previo)
+		instance.setVerticeHead(nuevo)
+endfunc
+
+proc Grafo<int>::agregarArista(int: a, b)
+	Var
+		pointer to NodoVertice<int> verticeActual, verticeEnvio, verticeDestino
+		pointer to NodoArco<int> arcoPrevio, arcoNuevo
+	Begin
+		verticeActual <- instance.getVerticeHead
+		while verticeActual do
+			if verticeActual->getInfo() = a then
+				verticeEnvio <- verticeActual
+			endif
+			if verticeActual->getInfo() = b then
+				verticeDestino <- verticeActual
+		endwhile
+
+		if verticeEnvio ^ verticeDestino then
+			arcoPrevio <- verticeEnvio->getArcoHead()
+
+			arcoNuevo <- new(NodoArco<int>)
+			arcoNuevo.setInfo(verticeDestino)
+			arcoNuevo.setNext(arcoPrevio)
+
+			verticeEnvio.setArcoHead(arcoNuevo)
+		endif
+endproc
+```
 ## Ejercicios Parciales y en clase
 Hay ejercicios de la guia de ejercicios que se encuentran aqui, especialmente los de dificultad dificil. 
 ### Detección de ciclos (Grafo Dirigido)
