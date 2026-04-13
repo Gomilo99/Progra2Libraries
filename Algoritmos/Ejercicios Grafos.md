@@ -191,7 +191,55 @@ proc Grafo<Element>::eliminarArcosDeSalida(Element: v)
 		endwhile
 endproc
 ```
-## Ejercicios
+## Guia Ejercicios
+### Fáciles
+#### Representación de un grafo (Lista de Adyacencia)
+Dado un número de nodos **n** y na lista de aristas (vertices), construya la representación de un grafo utilizando lista de adyacencia. El programa debe mostrar los vecinos de cada nodo.
+Implemente la función: `func construirGrafo(int: n, Lista<Par<int, int>>): Lista<Lista<int>>`
+>La solución **no** debe utilizar apuntadores. O(n + m)
+```Pseudocodigo
+func construirGrafo(int: n, Lista<Par<int,int>>: aristas): Lista<Lista<int>>
+	Var
+		Lista<Lista<int>>: result
+		array[1..N] of Lista<int>: buffer // Arreglo de un tipo genérico
+		Par<int, int>: verticeActual
+		int: i, v, w
+	Begin
+		result.construir()
+		// 1. Inicializamos el vector buffer (en progra se deberia crear una lista auxiliar, construirla y luego enviarla)
+		for i <- 1 to n do
+			buffer[i].construir()
+		endfor
+
+		// 2. Procesamos los m vértices usando el índice del arreglo
+		while ¬aristas.esVacia() do
+			verticeAct <- atistas.consultar(1)
+			v <- verticeAct.getPrimero()
+			w <- verticeAct.getSegundo()
+
+			buffer[v].insertar(w, 1)
+			buffer[w].insertar(v, 1)
+
+			aristas.eliminar(1)
+		endwhile
+		
+		// 3. Volcamos el arreglo en la lista final con un for
+		for i <- 1 to n do
+			result.insertar(buffer[i], result.getLong() +1)
+		endfor
+
+		return result
+endfunc
+```
+#### Verificación de existencia de vertices
+Dado un grafo representado mediante matriz de adyacencia y dos nodos u y v, determine si existe una arista directa entre dichos nodos.
+``func existeArista(matriz: Matriz<int>, u: int, v: int): bool``
+>La solución **no** debe utilizar apuntadores. O(1)
+```Pseudocodigo
+
+```
+## Ejercicios Parciales y en clase
+Hay ejercicios de la guia de ejercicios que se encuentran aqui, especialmente los de dificultad dificil. 
 ### Detección de ciclos (Grafo Dirigido)
 ![[Pasted image 20260411152636.png]]
 Se desea determinar si un grafo no dirigido tiene ciclos/circuitos en alguna parte, es decir, que en algún punto del grafo un nodo puede regresar a un nodo ya visitado antes. 
