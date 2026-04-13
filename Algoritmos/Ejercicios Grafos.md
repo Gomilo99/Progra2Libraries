@@ -194,7 +194,7 @@ endproc
 ## Guia Ejercicios
 ### Fáciles
 #### Representación de un grafo (Lista de Adyacencia)
-Dado un número de nodos **n** y na lista de aristas (vertices), construya la representación de un grafo utilizando lista de adyacencia. El programa debe mostrar los vecinos de cada nodo.
+Dado un número de nodos **n** y na lista de aristas (arcos), construya la representación de un grafo utilizando lista de adyacencia. El programa debe mostrar los vecinos de cada nodo.
 Implemente la función: `func construirGrafo(int: n, Lista<Par<int, int>>): Lista<Lista<int>>`
 >La solución **no** debe utilizar apuntadores. O(n + m)
 ```Pseudocodigo
@@ -202,7 +202,7 @@ func construirGrafo(int: n, Lista<Par<int,int>>: aristas): Lista<Lista<int>>
 	Var
 		Lista<Lista<int>>: result
 		array[1..N] of Lista<int>: buffer // Arreglo de un tipo genérico
-		Par<int, int>: verticeActual
+		Par<int, int>: arcoActual
 		int: i, v, w
 	Begin
 		result.construir()
@@ -213,9 +213,9 @@ func construirGrafo(int: n, Lista<Par<int,int>>: aristas): Lista<Lista<int>>
 
 		// 2. Procesamos los m vértices usando el índice del arreglo
 		while ¬aristas.esVacia() do
-			verticeAct <- atistas.consultar(1)
-			v <- verticeAct.getPrimero()
-			w <- verticeAct.getSegundo()
+			arcoActual <- atistas.consultar(1)
+			v <- arcoActual.getPrimero()
+			w <- arcoActual.getSegundo()
 
 			buffer[v].insertar(w, 1)
 			buffer[w].insertar(v, 1)
@@ -232,12 +232,25 @@ func construirGrafo(int: n, Lista<Par<int,int>>: aristas): Lista<Lista<int>>
 endfunc
 ```
 #### Verificación de existencia de vertices
-Dado un grafo representado mediante matriz de adyacencia y dos nodos u y v, determine si existe una arista directa entre dichos nodos.
+Dado un grafo representado mediante matriz de adyacencia y dos nodos u y v, determine si existe una arista/arco directa entre dichos nodos.
 ``func existeArista(matriz: Matriz<int>, u: int, v: int): bool``
 >La solución **no** debe utilizar apuntadores. O(1)
-```Pseudocodigo
 
+**REQUIERE REVISION**
+```Pseudocodigo
+func existeArista(Matriz<int>: matriz, int: u, v): bool
+	Var
+		int: arco
+	Begin
+		arco <- matriz[u][v]
+		if arco = 1 then
+			return true
+		endif
+		return false
+endfunc
 ```
+
+#### 
 ## Ejercicios Parciales y en clase
 Hay ejercicios de la guia de ejercicios que se encuentran aqui, especialmente los de dificultad dificil. 
 ### Detección de ciclos (Grafo Dirigido)
