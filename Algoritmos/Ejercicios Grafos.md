@@ -95,15 +95,15 @@ Cuando se recorre, los arcos se pueden clasificar. Esto es vital para detectar c
 func DFS(Grafo<Element>: g, Element: v): Lista<Element>
 	Var
 		array[1..N] of bool: visitados
-		Lista<Element>: recorrido, vecinos
+		Lista<Element>: recorrido
 		int: i, n
 	Begin
 		recorrido.construir()
-		vecinos.construir()
 		n <- g.getNVertices()
 		for i <- 1 to n do
 			visitados[i] <- false
 		endfor
+
 		DFS(g, v, visitados, recorrido)
 		return recorrido
 endfunc
@@ -192,7 +192,7 @@ proc Grafo<Element>::eliminarArcosDeSalida(Element: v)
 endproc
 ```
 ## Guia Ejercicios
-### Fáciles
+### Dificultad Fácil
 #### Representación de un grafo (Lista de Adyacencia)
 Dado un número de nodos **n** y na lista de aristas (arcos), construya la representación de un grafo utilizando lista de adyacencia. El programa debe mostrar los vecinos de cada nodo.
 Implemente la función: `func construirGrafo(int: n, Lista<Par<int, int>>): Lista<Lista<int>>`
@@ -258,11 +258,10 @@ Dado un grafo *no dirigido* representado mediante lista de adyacencia, calcule e
 ```
 func gradoNodo(Grafo<int>: grafo, int: v): int
 	Var
-		int: actual
+		Lista<int>: vecinos
 	Begin
-		actual <- grafo.getPrimero()
-
-		while (actual != v) v 
+		vecinos <- grafo.getVecinos(v) // Esto es O(n + grado(v)) pero no se de que otra manera se puede hacer para que de estrictamente O(grado(v))
+		return vecinos.getLong()
 ```
 #### Grafo dinámico simple
 Implemente la estructura **Grafo** que permita agregar nodos, dinamicamente y conectar nodos mediante aristas.
@@ -307,9 +306,143 @@ proc Grafo<int>::agregarArista(int: a, b)
 		endif
 endproc
 ```
-## Ejercicios Parciales y en clase
-Hay ejercicios de la guia de ejercicios que se encuentran aqui, especialmente los de dificultad dificil. 
-### Detección de ciclos (Grafo Dirigido)
+### Dificultad Media
+#### Recorrido en Amplitud(BFS) sin apuntadores
+Dado un grafo no dirigido y un vértice inicial, implemente el algoritmo BFS mostrando el orden de visita de los nodos.
+`func BFS(Grafo<int>: grafo, int: inicio): Lista<int>`
+```Pseudocodigo
+func BFS(Grafo<int>: grafo, int: inicio): Lista<int>
+	Var
+		Lista<int>: vecinos, result
+		Cola<int>: colaAux
+		array[1..N] of bool: visitado
+		int: i
+	Begin
+		vecinos.construir()
+		for i <- 1 to grafo.getNNodos() do
+			visitado.[i] <- false
+		endfor
+
+		colaAux.constuir()
+		colaAux.encolar(grafo.getVerticeHead())
+		while ¬colaAux.esVacia() do
+			v <- colaAux.getFrente()
+			vecinos <- grafo.getVecinos(v)
+			visitado[v] <- true
+			result.insertar(v, result.getLong() +1)
+
+			while ¬vecinos.esVacia() do
+				w <- vecinos.consultar(1)
+				colaAux.encolar(w)
+				vecinos.eliminar(1)
+			endwhile
+
+			colaAux.desencolar()
+		endwhile
+		return result
+endfunc
+```
+#### Recorrido en Profundidad (DFS)
+Implemente el algoritmo **DFS** en dos versiones:
+- Versión **recursiva**
+- Versión **iterativa** utilizando una pila
+`func dfsRecursivo(Grafo<Element>: grafo, Element: inicio)`
+`func dfsIterativo(Grafo<Element>: grafo, Element: inicio)`
+>No usar apuntadores. O(n + m)
+
+```
+func dfsRecursivo(Grafo<Element>: grafo, Element: inicio)
+	Var
+		array[1..N] of bool: visitado // estructura que guarda el mapeado del grafo (arreglo si es int, mapas si es alguna otra)
+		int: i
+	Begin
+		for i <- 1 to grafo.getNNodos() do
+			visitados[i] <- false
+		endfor
+		
+		// Inicializar salida
+
+		// enviar dfs con salida como parametro
+		dfsRecursivo(grafo, inicio, visitado)
+endfunc
+proc dfsRecursivo(ref Grafo<int>: grafo, Element: inicio, ref array[1..N] of bool: visitado)
+	Var
+		Lista<int>: vecinos
+	Begin
+		// Procesar Vertice
+		visitado[inicio] <- true // se marca como visitado en la estructura de mapeado
+
+		// Procesar vecinos
+		vecinos <- g.getVecinos(incio)
+		while ¬vecinos do
+			w <- vecinos.consultar(1)
+			if ¬visitados[w] then
+				dfsRecursivo(grafo, inicio, visitado)
+			endif
+			vecinos.eliminar(1)
+		endwhile
+endproc
+
+func dfsIterativo(Grafo<Element>: grafo, Element: inicio): Lista<Element>
+	Var
+		Pila<Element>: pilaAux
+		Mapa<int, Par<Element, bool> >: visitados
+		Par<Element, bool>: parAux
+		Lista<Element>: vecinos, recorrido
+		int: i
+	Begin
+		// Se llena el "vector" de visitados con falsos (se mapea)
+		visitados <- mapeoVisitados()
+		
+		// Se apila el primer nodo
+		parAux <- visitados[1]
+		pilaAux.constuir()
+		pilaAux.apliar(parAux.getFirst())
+
+		vecinos.construir()
+		recorrido.construir()
+
+		// Se itera de manera parecida al BFS
+		while ¬pilaAux.esVacia() do
+			v <- pilaAux.consultar(1)
+			visitados[v].setSecond(true)
+			recorrido.insertar(v, recorrido.getLong() +1)
+			pilaAux.desapilar()
+
+			// Se hace como en DFS para los vecinos de v
+			vecinos <- grafo.getVecinos(V)
+			while ¬vecinos do
+				w <- vecinos.consultar(1)
+				if visitados[w].getSecond() then
+					pilaAux.apliar(w)
+				endif
+				vecinos.eliminar(1)
+			endwhile
+		endwhile
+endfunc
+
+func Grafo<Element>::mapeoVisitados(): Map<int, Par<bool, Element>
+	Var
+		pointer to NodoVertice<Element>: actual
+		Mapa<int, Par<Element, bool>>: result
+		Par<Element, bool>: auxPar
+		int: i
+	Begin
+		verAct <- instance.verticeHead
+		i <- 1
+		while verAct do
+			auxPar.setFirst(verAct->getInfo())
+			auxPar.setSecond(false)
+			
+			result.intertarUltimo(i, auxPar) // Se asume que existe el insertar como metodo de la estrutura map y que tiene O(1)
+			i <- i + 1
+			verAct <- verAct->getNext()
+		endwhile
+
+		return result
+endfunc
+```
+#### Detección de ciclos (Grafo Dirigido)
 ![[Pasted image 20260411152636.png]]
 Se desea determinar si un grafo no dirigido tiene ciclos/circuitos en alguna parte, es decir, que en algún punto del grafo un nodo puede regresar a un nodo ya visitado antes. 
 
@@ -354,7 +487,51 @@ proc DFSCiclo(ref Grafo<int>: g, int: v, ref array[1..N] of bool: visitados, ref
 		endif
 endProc
 ```
-### Ordenamiento Topológico
+### Componentes conexas
+Dado un grafo previamente mapeado encontrar la cantidad/numero de componentes conexas de un grafo. O(n+m)
+
+Las componentes conexas son el conjunto de elementos que tienen arcos entre si. Si hay una sola componente conexas el grafo es conexo, de lo contrario se podría decir que hay varios "subgrafos"  no conexos/accesibles entre si.
+>Se usa DFS
+
+
+```Pseudocodigo
+func getNComponentesConexas(Grafo<int>: g): int
+	Var
+		array[1..N] of bool: visitado
+		int: result, i
+	Begin
+		for i <- 1 to g.getNNodos() do
+			visitado[i] <- false
+		endfor
+		result <- 0
+		
+		for i <- 1 to g.getNNodos() do
+			if ¬visitado[i] then
+				DFSMod(g, i, visitado)
+				result <- result +1
+			endif
+		endfor
+		
+		return result
+endfunc
+
+proc DFSMod(ref Grafo<int>: g, int: v, ref array[1..N] of bool: visitado)
+	Var
+		Lista<int>: vecinos
+	Begin
+		vecinos <- g.getVecinos(v)
+		while ¬vecinos.esVacia() do
+			w <- vecinos.consultar(1)
+			if ¬visitado[w] then
+				visitado[w] <- true
+				DFSMod(g, w, visitado)
+			endif
+			vecinos.eliminar(1)
+		endwhile
+endproc
+```
+### Dificultad Difícil
+#### Ordenamiento Topológico
 Dado un DAG "==Directed Acyclical Graph==" de tareas. Devolver el orden de ejecución de estas.
 ![[Pasted image 20260411170216.png]] 
 Result: (T1, T2, T3, T4, T5, T7, T11, T6, T8, T9, T10)
@@ -414,6 +591,7 @@ endfunc
 		
 endfunc
 ```
+## Otros Ejercicios
 ### Es Bipartito
 Dado un grafo g conexo, mapeado y no dirigido cree la función para saber si es bipartito. Un grafo bipartito es un grafo donde se pueden extraer dos conjuntos de elementos que no esté conexos entre sí (el conjunto A no está conectado directamente con el conjunto B), no tiene un arco directo. Este problema es el mismo que el de colorear un grafo con dos colores donde los elemento contiguos no tengan el mismo color.
 ![[Pasted image 20260411174627.png]]
@@ -457,47 +635,5 @@ func esBipartito(Grafo<int>: g): bool
 		return true
 endfunc
 ```
-### Componentes conexas
-Dado un grafo previamente mapeado encontrar la cantidad/numero de componentes conexas de un grafo. O(n+m)
 
-Las componentes conexas son el conjunto de elementos que tienen arcos entre si. Si hay una sola componente conexas el grafo es conexo, de lo contrario se podría decir que hay varios "subgrafos"  no conexos/accesibles entre si.
->Se usa DFS
-
-
-```Pseudocodigo
-func getNComponentesConexas(Grafo<int>: g): int
-	Var
-		array[1..N] of bool: visitado
-		int: result, i
-	Begin
-		for i <- 1 to g.getNNodos() do
-			visitado[i] <- false
-		endfor
-		result <- 0
-		
-		for i <- 1 to g.getNNodos() do
-			if ¬visitado[i] then
-				DFSMod(g, i, visitado)
-				result <- result +1
-			endif
-		endfor
-		
-		return result
-endfunc
-
-proc DFSMod(ref Grafo<int>: g, int: v, ref array[1..N] of bool: visitado)
-	Var
-		Lista<int>: vecinos
-	Begin
-		vecinos <- g.getVecinos(v)
-		while ¬vecinos.esVacia() do
-			w <- vecinos.consultar(1)
-			if ¬visitado[w] then
-				visitado[w] <- true
-				DFSMod(g, w, visitado)
-			endif
-			vecinos.eliminar(1)
-		endwhile
-endproc
-```
 
