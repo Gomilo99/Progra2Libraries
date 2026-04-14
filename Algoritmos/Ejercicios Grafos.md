@@ -530,6 +530,8 @@ proc DFSMod(ref Grafo<int>: g, int: v, ref array[1..N] of bool: visitado)
 		endwhile
 endproc
 ```
+
+
 ### Dificultad Difícil
 #### Ordenamiento Topológico
 Dado un DAG "==Directed Acyclical Graph==" de tareas. Devolver el orden de ejecución de estas.
@@ -591,6 +593,91 @@ endfunc
 		
 endfunc
 ```
+#### Camino más corto con pesos (Dijkstra)
+Implement el algoritmo de **Dijkstra** para encontrar las distancias mínimas desde un nodo origen todos los demás nodos del grafo con pesos positivos. Debe utilizar una cola.
+``func dijkstra(Grafo<int>: grafo, int: origen): array[1..N] of float``
+```
+func dijkstra(Grafo<int>: grafo, int: origen): array[1..N] of float
+	Var
+		Lista<int>: vecinos
+		Cola<int>: colaAux
+		array[1..N] of bool: visitados
+		array[1..N] of float: distancias
+		int: i, v, w
+		float: pesoArco
+	Begin
+		for i <- 1 to grafo.getNNodos() do
+			distancias[i] <- inf
+			visitados[i] <- false
+		endfor
+
+		colaAux.construir()
+		colaAux.encolar(origen)
+		distancias[origen] <- 0
+		while ¬colaAux.esVacia() do
+			extraerMinSegunDist(colaAux, distancias, v) // ya desencola el elemento
+			vecinos <- grafo.getVecinos(v)
+			if ¬visitados[v] then
+				visitados[v] <- true
+
+				while ¬vecinos.esVacia() do
+					w <- vecinos.consultar(1)
+					pesoArco <- grafo.getPeso(v, w)
+					if (distancias[v] + pesoArco) < distancias[w] then
+						distancias[w] <- distancias[v] + pesoArco
+						colaAux.encolar(w)
+					endif
+					vecinos.eliminar(1)
+				endwhile
+			endif
+		endwhile
+		return distancias
+endfunc
+
+proc extraerMinSegunDist(ref Cola<int>: colaAux, ref array[1..N] of float: distancias, ref int: v)
+	Var
+		int: actual, tamCola, i
+		float: distMinima
+		bool: eliminado
+	Begin
+		eliminado <- false
+		distMinima <- inf
+		tamCola <- colaAux.getLong()
+		v <- colaAux.getFrente()
+		for i <- 1 to tamCola do
+			actual <- colaAux.getFrente()
+			colaAux.desencolar()
+			if distancias[actual] < distMinima then
+				v <- actual
+				distMinima <- distancias[actual]
+			endif
+			colaAux.encolar(actual)
+		endfor
+
+		for i <- 1 to tamCola do
+			actual <- colaAux.getFrente()
+			colaAux.desencolar()
+
+			if (actual = v) ^ (¬eliminado) then
+				eliminado <- true
+			else
+				colaAux.encolar(actual)
+			endif
+		endfor
+endproc
+```
+#### Mapa de rutas entre ciudades
+Modele un mapa de ciudades como un grafo no dirigido con pesos, donde cada arista/arco representa una carretera y su peso es la distancia en kilómetros.
+`func agregarCiudad(nombre)`
+`func agregarRuta(ciudad1, ciudad2, distancia)`
+`func ciudadesAMenosDe(ciudad, km)`
+`func esDestinoAlcanzable(origen, destino)`
+- **ciudadesAMenosDe**: retorna todas las ciudades alcanzables con una sola ruta directa de máximo *km* kilometros.
+- **esDestinoAlcanzable**: retorna True si existe algún camino entre ambas ciudades.
+>Usar apuntadores
+```
+
+```
 ## Otros Ejercicios
 ### Es Bipartito
 Dado un grafo g conexo, mapeado y no dirigido cree la función para saber si es bipartito. Un grafo bipartito es un grafo donde se pueden extraer dos conjuntos de elementos que no esté conexos entre sí (el conjunto A no está conectado directamente con el conjunto B), no tiene un arco directo. Este problema es el mismo que el de colorear un grafo con dos colores donde los elemento contiguos no tengan el mismo color.
@@ -636,4 +723,13 @@ func esBipartito(Grafo<int>: g): bool
 endfunc
 ```
 
+## Parcial 2-2025
+### Ejercicio 1: Reverse Graph
+Desarrollo el método de la clase GrafoNoDirigido:
+`proc GrafoDirigido<Elemento>::reverseGraph()`
+Que cambie la dirección de todos los arcos(u, v) para que sean ahora arcos(v, u).
+>Usar apuntadores. O(n + m)
+```
 
+```
+### Ejercicio 2: Camino más corto
