@@ -404,7 +404,7 @@ func dfsIterativo(Grafo<Element>: grafo, Element: inicio): Lista<Element>
 
 		// Se itera de manera parecida al BFS
 		while ¬pilaAux.esVacia() do
-			v <- pilaAux.consultar(1)
+			v <- pilaAux.getTope(1)
 			visitados[v].setSecond(true)
 			recorrido.insertar(v, recorrido.getLong() +1)
 			pilaAux.desapilar()
@@ -413,7 +413,7 @@ func dfsIterativo(Grafo<Element>: grafo, Element: inicio): Lista<Element>
 			vecinos <- grafo.getVecinos(V)
 			while ¬vecinos do
 				w <- vecinos.consultar(1)
-				if visitados[w].getSecond() then
+				if ¬visitados[w].getSecond() then
 					pilaAux.apliar(w)
 				endif
 				vecinos.eliminar(1)
@@ -729,7 +729,158 @@ Desarrollo el método de la clase GrafoNoDirigido:
 `proc GrafoDirigido<Elemento>::reverseGraph()`
 Que cambie la dirección de todos los arcos(u, v) para que sean ahora arcos(v, u).
 >Usar apuntadores. O(n + m)
-```
+```Pseudocodigo
+proc GrafoDirigido<Elemento>::reverseGraph()
+	Var
+		pointer to NodoVertice<Element>: v, origen, destino
+		pointer to NodoArco<Element>: arco, nuevoArco
+		pointer to NodoVertice<Element>: copiaHead, copiaTail, actual, verticeCopia
+	Begin
+		// 1. se guarda una copia de los nodos con la referencia al primer arco
+		v <- instance.verticeHead
+		while v do
+			verticeCopia <- new NodoVertice<Element>
+			vertoceCopia->setInfo(v->getInfo())
+			verticeCopia->setArcoHead(v->getArcoHead())
+			verticeCopia->setNext(NULL)
 
+			if verticeCopia = NULL then
+				copiaHead <- verticeCopia
+				copiaTail <- verticeCopia
+			else
+				copiaTail->setNext(verticeCopia)
+				copiaTail <- verticeCopia
+			endif
+			v->setArcoHead(NULL)
+			v <- v->getNextVertice()
+		endwhile
+	
+		// 2. por cada arco origen a destino, insertar al revés destino a origen
+		actual <- copiaHead
+		while actual do
+			v <- actual
+			arco <- actual.getArcoHead()
+
+			while arco do
+				destino <- arco->getVertice() // puntero al vertice destino
+				
+				nuevoArco <- new NodoArco<Element>
+				nuevoArco->setVertice(v)
+				nuevoArco->setNextArco(destino->getArcoHead()) // reescribe el arco del vertice destino (ya estaba desconectado)
+				destino->setArcoHead(nuevoArco)
+
+				arco <- arco->getNextArco()
+			endwhile
+
+			actual <- actual->getNextVertice()
+		endwhile
+
+		// Liberar backups (no se que tan necesario)
+		while copiaHead do
+			actual <- copiaHead
+			copiaHead <- copiaHead->getNextVertice()
+			free(actual)
+		endwhile
+endproc
 ```
 ### Ejercicio 2: Camino más corto
+Dado un grafo g. No dirigido, no ponderado y mapeado. Cree la función:
+`func getCaminoMasCortoArcos(Grafo<int>: g, int: v, w, intermedio): Lista<int>`
+Que devuelva una lista de enteros con el camino más corto en arcos de v a w pero **obligatoriamente** por el vértice *intermedio*.
+>Su solución debe ser a lo sumo O(n + m)
+```
+func getCaminoMasCortoArcos(Grafo<int>: g, int: v, w, intermedio): Lista<int>
+	Var
+		array[1..N] of int: padres1, padres2
+		Lista<int>: camino1, camino2, result
+		bool: ok1, ok2
+		int: vertice
+	Begin
+		ok1 <- BFSConPadres(g, v, intermedio, padres1)
+		ok2 <- BFSConPadres(g, intermedio, w, padres2)
+		result.construir()
+		if ¬ok1 v ¬ok2 then
+			return result
+		endif
+
+		camino1 <- reconstruirCamino(v, intermedio, padres1)
+		camino2 <- reconstruirCamino(intermedio, w, padres2)
+
+		result <- camino1
+		camino2.eliminar(1)
+		while ¬camino2.esVacia() do
+			vertice <- camino2.consultar(1)
+			result.insertar(vertice, result.getLong() +1)
+			camino2.eliminar(1)
+		endwhile
+
+		return result
+endfunc
+
+func BFSConPadres(Grafo<int>: g, int: origen, destino, ref array[1..N] of int: padres): bool
+	Var
+		Cola<int>: colaAux
+		Lista<int>: vecinos
+		array[1..N] of bool: visitado
+		int: i, a, b
+	Begin
+		for i <- 1 to g.getNNodos() do
+			visitado[i] <- false
+			padres[i] <- -1
+		endfor
+
+		colaAux.construir()
+		colaAux.encolar(origen)
+		visitado[origen] <- true
+		
+		while ¬colaAux.esVacia() do
+			a <- colaAux.getFrente()
+			colaAux.desencolar()
+
+			if a = destino then
+				return true
+			endif
+
+			vecinos <- g.getVecinos(a)
+			while ¬vecinos.esVacia() do
+				b <- vecinos.consultar(1)
+				if ¬visitado[b] then
+					visitado[b] <- true
+					padres[b] <- a
+					colaAux.encolar(b)
+				endif
+				vecinos.eliminar(1)
+			endwhile
+		endwhile
+
+		return visitado[destino] // Esto debería ser falso
+endfunc
+
+func reconstruirCamino(int: origen, destino, array[1..N] of int: padres): Lista<int>
+	Var
+		Pila<int>: pilaAux
+		Lista<int>: camino
+		int: actual
+	Begin
+		camino.construir()
+		pilaAux.construir()
+
+		actual <- destino
+		while actual != -1 ^ actual != origen do
+			pilaAux.apliar(actual)
+			actual <- padres[actual]
+		endwhile
+
+		if actual = -1 then
+			return camino
+		endif
+
+		pilaAux.apliar(origen)
+		while ¬pilaAux.esVacia() do
+			camino.insertar(pilaAux.getTope(), camino.getLong() +1)
+			pilaAux.desapilar()
+		endwhile
+
+		return camino
+endfunc
+```
