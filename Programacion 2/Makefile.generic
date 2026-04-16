@@ -4,18 +4,16 @@ CXX := g++
 CXXFLAGS := -std=c++98 -O2 -Wall -Wextra -Wpedantic
 INCLUDES := -Iinclude
 SRC_DIR := src
-BIN_DIR := bin
 
-EX ?= 02_sorted_intersect
+EX ?= 1-2026_rutaDefensa
 SRC := $(SRC_DIR)/$(EX).cpp
-OUT := $(BIN_DIR)/$(EX)
+OUT := arboles
 
 .PHONY: all build run clean
 
 all: build
 
 build:
-	@mkdir -p $(BIN_DIR)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $(SRC) -o $(OUT)
 
 run: build

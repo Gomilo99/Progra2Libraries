@@ -9,7 +9,6 @@ Representacion: lista de vertices y, por cada vertice, lista de arcos.
 #include <iostream>
 #include <stdexcept>
 #include "Lista.hpp"
-#include "Cola.hpp"
 
 using namespace std;
 
@@ -176,35 +175,6 @@ private:
         }
     }
 
-    /** @brief Verifica si un valor ya fue marcado como visitado. */
-    bool estaVisitado(const Lista<T>& visitados, const T& valor) const {
-        return visitados.buscar(valor) != -1;
-    }
-
-    /** @brief DFS recursivo interno para un vertice puntual. */
-    void dfsRecDesdeVertice(NodoVertice<T>* inicio, Lista<T>& visitados, Lista<T>& recorrido) const {
-        if (!inicio) {
-            return;
-        }
-
-        const T& valor = inicio->getInfo();
-        if (estaVisitado(visitados, valor)) {
-            return;
-        }
-
-        visitados.insertar(valor, visitados.getLong() + 1);
-        recorrido.insertar(valor, recorrido.getLong() + 1);
-
-        NodoArco<T>* arco = inicio->getArcoHead();
-        while (arco) {
-            NodoVertice<T>* sig = arco->getVertice();
-            if (!estaVisitado(visitados, sig->getInfo())) {
-                dfsRecDesdeVertice(sig, visitados, recorrido);
-            }
-            arco = arco->getNextArco();
-        }
-    }
-
 public:
     /**
      * @brief Construye un grafo vacio.
@@ -337,6 +307,29 @@ public:
     }
 
     /**
+     * @brief Retorna el peso del arco v->w.
+     * @throw invalid_argument Si v o w no existen o no hay arco v->w.
+     */
+    float getPesoArco(const T& v, const T& w) const {
+        NodoVertice<T>* origen = buscarVerticePtr(v);
+        NodoVertice<T>* destino = buscarVerticePtr(w);
+
+        if (!origen || !destino) {
+            throw invalid_argument("Vertice no existe en getPesoArco");
+        }
+
+        NodoArco<T>* arco = origen->getArcoHead();
+        while (arco) {
+            if (arco->getVertice() == destino) {
+                return arco->getPeso();
+            }
+            arco = arco->getNextArco();
+        }
+
+        throw invalid_argument("Arco no existe en getPesoArco");
+    }
+
+    /**
      * @brief Retorna sucesores de v.
      * @throw invalid_argument Si v no existe.
      */
@@ -402,114 +395,6 @@ public:
      */
     int getGradoVertice(const T& v) const {
         return getVecinos(v).getLong();
-    }
-
-    /**
-     * @brief BFS desde un vertice inicial.
-     * @throw invalid_argument Si inicio no existe.
-     */
-    Lista<T> bfs(const T& inicio) const {
-        NodoVertice<T>* ptrInicio = buscarVerticePtr(inicio);
-        if (!ptrInicio) {
-            throw invalid_argument("Vertice inicial no existe en bfs");
-        }
-
-        Lista<T> recorrido;
-        Lista<T> visitados;
-        Cola<NodoVertice<T>*> colaAux;
-
-        colaAux.encolar(ptrInicio);
-        visitados.insertar(ptrInicio->getInfo(), visitados.getLong() + 1);
-
-        while (!colaAux.esVacia()) {
-            NodoVertice<T>* actual = colaAux.getFrente();
-            colaAux.desencolar();
-
-            recorrido.insertar(actual->getInfo(), recorrido.getLong() + 1);
-
-            NodoArco<T>* arco = actual->getArcoHead();
-            while (arco) {
-                NodoVertice<T>* vecino = arco->getVertice();
-                if (!estaVisitado(visitados, vecino->getInfo())) {
-                    visitados.insertar(vecino->getInfo(), visitados.getLong() + 1);
-                    colaAux.encolar(vecino);
-                }
-                arco = arco->getNextArco();
-            }
-        }
-
-        return recorrido;
-    }
-
-    /**
-     * @brief BFS por componentes en todo el grafo.
-     */
-    Lista<T> bfs() const {
-        Lista<T> recorrido;
-        Lista<T> visitados;
-
-        NodoVertice<T>* inicio = verticeHead;
-        while (inicio) {
-            if (!estaVisitado(visitados, inicio->getInfo())) {
-                Cola<NodoVertice<T>*> colaAux;
-                colaAux.encolar(inicio);
-                visitados.insertar(inicio->getInfo(), visitados.getLong() + 1);
-
-                while (!colaAux.esVacia()) {
-                    NodoVertice<T>* actual = colaAux.getFrente();
-                    colaAux.desencolar();
-
-                    recorrido.insertar(actual->getInfo(), recorrido.getLong() + 1);
-
-                    NodoArco<T>* arco = actual->getArcoHead();
-                    while (arco) {
-                        NodoVertice<T>* vecino = arco->getVertice();
-                        if (!estaVisitado(visitados, vecino->getInfo())) {
-                            visitados.insertar(vecino->getInfo(), visitados.getLong() + 1);
-                            colaAux.encolar(vecino);
-                        }
-                        arco = arco->getNextArco();
-                    }
-                }
-            }
-            inicio = inicio->getNextVertice();
-        }
-
-        return recorrido;
-    }
-
-    /**
-     * @brief DFS desde un vertice inicial.
-     * @throw invalid_argument Si inicio no existe.
-     */
-    Lista<T> dfs(const T& inicio) const {
-        NodoVertice<T>* ptrInicio = buscarVerticePtr(inicio);
-        if (!ptrInicio) {
-            throw invalid_argument("Vertice inicial no existe en dfs");
-        }
-
-        Lista<T> recorrido;
-        Lista<T> visitados;
-        dfsRecDesdeVertice(ptrInicio, visitados, recorrido);
-        return recorrido;
-    }
-
-    /**
-     * @brief DFS por componentes en todo el grafo.
-     */
-    Lista<T> dfs() const {
-        Lista<T> recorrido;
-        Lista<T> visitados;
-
-        NodoVertice<T>* actual = verticeHead;
-        while (actual) {
-            if (!estaVisitado(visitados, actual->getInfo())) {
-                dfsRecDesdeVertice(actual, visitados, recorrido);
-            }
-            actual = actual->getNextVertice();
-        }
-
-        return recorrido;
     }
 
     /**

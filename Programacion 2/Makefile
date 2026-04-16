@@ -3,10 +3,10 @@
 CXX := g++
 CXXFLAGS := -std=c++98 -O2 -Wall -Wextra -Wpedantic
 INCLUDES := -Iinclude
-SRC_DIR := talleres_arboles
+SRC_DIR := talleres_grafos
 BIN_DIR := bin
 OUTPUT_MODE := ex
-FIXED_OUTPUT_NAME := arboles
+FIXED_OUTPUT_NAME := grafos
 BUILD_SCOPE := one
 
 ifeq ($(OS),Windows_NT)
@@ -22,7 +22,7 @@ endif
 SOURCES := $(wildcard $(SRC_DIR)/*.cpp)
 TARGETS := $(patsubst $(SRC_DIR)/%.cpp,$(BIN_DIR)/%$(EXE_EXT),$(SOURCES))
 
-EX ?= 1-2025_mup
+EX ?= 1-2026_ordenMundial
 DATA_DIR ?= talleres_arboles
 IN ?= $(DATA_DIR)/in.txt
 OUT ?= $(DATA_DIR)/out.txt
