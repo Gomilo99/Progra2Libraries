@@ -9,17 +9,9 @@
 using namespace std;
 
 // Prototipos
-void construirIndiceAeropuertos(const Grafo<string>& redAerea,
-                                map<string, int>& indiceDeAeropuerto,
-                                vector<string>& aeropuertoPorIndice);
-
-vector< vector<int> > construirVecinosPorIndice(const Grafo<string>& redAerea,
-                                                const map<string, int>& indiceDeAeropuerto,
-                                                const vector<string>& aeropuertoPorIndice);
-
-bool esCompatibleConSeleccionActual(int aeropuerto,
-                                    const vector< vector<int> >& vecinosPorIndice,
-                                    const vector<bool>& seleccionadoActual);
+void construirEstructuras(const Grafo<string>& redAerea,
+                         vector<string>& aeropuertoPorIndice,
+                         vector< vector<int> >& vecinosPorIndice);
 
 void buscarConjuntoIndependienteMaximoRec(const vector< vector<int> >& vecinosPorIndice,
                                           int posicion,
@@ -79,18 +71,13 @@ int main() {
         }
     }
 
-    map<string, int> indiceDeAeropuerto;
     vector<string> aeropuertoPorIndice;
-    construirIndiceAeropuertos(redAerea, indiceDeAeropuerto, aeropuertoPorIndice);
+    vector< vector<int> > vecinosPorIndice;
+    construirEstructuras(redAerea, aeropuertoPorIndice, vecinosPorIndice);
 
-    vector< vector<int> > vecinosPorIndice = construirVecinosPorIndice(
-        redAerea,
-        indiceDeAeropuerto,
-        aeropuertoPorIndice
-    );
     vector<int> solucion = calcularConjuntoIndependienteMaximo(vecinosPorIndice);
 
-    imprimirConjuntoIndependiente(solucion, aeropuertoPorIndice);
+    imprimirConjuntoIndependiente(solucion, aeropuertoPorIndice, cout);
 
     // Visualizacion opcional para depuracion/local:
     // imprimirGrafoBonitoCLI(redAerea);
@@ -100,13 +87,13 @@ int main() {
 }
 
 
-void construirIndiceAeropuertos(const Grafo<string>& redAerea,
-                                map<string, int>& indiceDeAeropuerto,
-                                vector<string>& aeropuertoPorIndice) {
-    indiceDeAeropuerto.clear();
+void construirEstructuras(const Grafo<string>& redAerea,
+                         vector<string>& aeropuertoPorIndice,
+                         vector< vector<int> >& vecinosPorIndice) {
     aeropuertoPorIndice.clear();
 
     Lista<string> vertices = redAerea.getVertices();
+    map<string, int> indiceDeAeropuerto;
     int indice = 0;
 
     while (!vertices.esVacia()) {
@@ -116,13 +103,9 @@ void construirIndiceAeropuertos(const Grafo<string>& redAerea,
         aeropuertoPorIndice.push_back(v);
         ++indice;
     }
-}
 
-vector< vector<int> > construirVecinosPorIndice(const Grafo<string>& redAerea,
-                                                const map<string, int>& indiceDeAeropuerto,
-                                                const vector<string>& aeropuertoPorIndice) {
     int n = (int)aeropuertoPorIndice.size();
-    vector< vector<int> > vecinosPorIndice(n, vector<int>());
+    vecinosPorIndice.assign(n, vector<int>());
 
     for (int i = 0; i < n; ++i) {
         const string& aeropuerto = aeropuertoPorIndice[i];
@@ -138,25 +121,6 @@ vector< vector<int> > construirVecinosPorIndice(const Grafo<string>& redAerea,
             }
         }
     }
-
-    return vecinosPorIndice;
-}
-
-bool esCompatibleConSeleccionActual(int aeropuerto,
-                                    const vector< vector<int> >& vecinosPorIndice,
-                                    const vector<bool>& seleccionadoActual) {
-    bool compatible = true;
-    int k = 0;
-
-    while (k < (int)vecinosPorIndice[aeropuerto].size() && compatible) {
-        int vecino = vecinosPorIndice[aeropuerto][k];
-        if (seleccionadoActual[vecino]) {
-            compatible = false;
-        }
-        ++k;
-    }
-
-    return compatible;
 }
 
 void buscarConjuntoIndependienteMaximoRec(const vector< vector<int> >& vecinosPorIndice,
@@ -187,11 +151,15 @@ void buscarConjuntoIndependienteMaximoRec(const vector< vector<int> >& vecinosPo
 
             // Rama 2: tomarlo solo si no tiene conflicto con los ya tomados.
             int aeropuerto = posicion;
-            bool compatible = esCompatibleConSeleccionActual(
-                aeropuerto,
-                vecinosPorIndice,
-                seleccionadoActual
-            );
+            bool compatible = true;
+            int k = 0;
+            while (k < (int)vecinosPorIndice[aeropuerto].size() && compatible) {
+                int vecino = vecinosPorIndice[aeropuerto][k];
+                if (seleccionadoActual[vecino]) {
+                    compatible = false;
+                }
+                ++k;
+            }
 
             if (compatible) {
                 seleccionadoActual[aeropuerto] = true;
