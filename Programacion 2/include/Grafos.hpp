@@ -1,100 +1,597 @@
-#ifndef ARBOLN_HPP
-#define ARBOLN_HPP
+#ifndef GRAFOS_HPP
+#define GRAFOS_HPP
 
 /*
-Librería basada en las clases dadas en Algoritmos 2
-
+Libreria basada en clases de Algoritmos 2.
+Representacion: lista de vertices y, por cada vertice, lista de arcos.
 */
 
-#include <list>
-#include <vector>
 #include <iostream>
+#include <stdexcept>
+#include "Lista.hpp"
+#include "Cola.hpp"
 
 using namespace std;
+
 template <typename T>
+class NodoVertice;
 
-class NodoArco{
-    private:
-        // Attributes
-        NodoVertice<T> *infoV;
-        NodoArco *nextA;
-        float peso;
-    public:
-        explicit NodoArco() : infoV(NULL), nextA(NULL), peso(0) {}
-        explicit NodoArco(NodoVertice<T> *value, NodoArco<T> *next, float weight) :
-        infoV(value), nextA(next), peso(weight) {}
+/**
+ * @brief Nodo de arco para lista de adyacencia.
+ * @tparam T Tipo de dato del vertice.
+ */
+template <typename T>
+class NodoArco {
+private:
+    NodoVertice<T>* destino;
+    NodoArco<T>* nextA;
+    float peso;
 
-        // getters
-        NodoVertice<T>* getVertice() const { return infoV; }
-        NodoArco<T>* getNextArco() const { return nextA; }
-        float& getPeso() const { return peso; }
+public:
+    /** @brief Construye un arco vacio. */
+    NodoArco() : destino(NULL), nextA(NULL), peso(0.0f) {}
 
-        // setters
-        void setVertice(NodoVertice *verticeNew){ this->infoV = verticeNew; }
-        void setNextArco(NodoArco *nextArcoNew){ this->nextA = nextArcoNew; }
-        void setPeso(float pesoNew){ this->peso = pesoNew; }
+    /**
+     * @brief Construye un arco con destino, siguiente y peso.
+     */
+    NodoArco(NodoVertice<T>* ptrDestino, NodoArco<T>* ptrNext, float nuevoPeso)
+        : destino(ptrDestino), nextA(ptrNext), peso(nuevoPeso) {}
+
+    /** @brief Retorna vertice destino. */
+    NodoVertice<T>* getVertice() const { return destino; }
+
+    /** @brief Retorna siguiente arco. */
+    NodoArco<T>* getNextArco() const { return nextA; }
+
+    /** @brief Retorna peso del arco. */
+    float getPeso() const { return peso; }
+
+    /** @brief Actualiza vertice destino. */
+    void setVertice(NodoVertice<T>* ptrDestino) { destino = ptrDestino; }
+
+    /** @brief Actualiza siguiente arco. */
+    void setNextArco(NodoArco<T>* ptrNext) { nextA = ptrNext; }
+
+    /** @brief Actualiza peso del arco. */
+    void setPeso(float nuevoPeso) { peso = nuevoPeso; }
 };
 
+/**
+ * @brief Nodo de vertice para lista principal del grafo.
+ * @tparam T Tipo de dato del vertice.
+ */
 template <typename T>
-class NodoVertice{
-    private:
-        // Attributes
-        T info;
-        NodoVertice<T> *next;
-        NodoArco<T> *arcosHead;
-        int: nSucesores;
-    public:
-        NodoVertice(T newInfo, NodoVertice<T> *nextV, NodoArco<T> *arcoW) : info(newInfo),
-        next(nextV), arcosHead(arcoW) {
-            if(arcosHead){
-                this->nSucesores = 1;
-            }else{
-                this->nSucesores = 0;
+class NodoVertice {
+private:
+    T info;
+    NodoVertice<T>* nextV;
+    NodoArco<T>* arcosHead;
+
+public:
+    /** @brief Construye un vertice. */
+    NodoVertice(const T& valor, NodoVertice<T>* sigV, NodoArco<T>* sigA)
+        : info(valor), nextV(sigV), arcosHead(sigA) {}
+
+    /** @brief Retorna valor del vertice. */
+    const T& getInfo() const { return info; }
+
+    /** @brief Retorna siguiente vertice. */
+    NodoVertice<T>* getNextVertice() const { return nextV; }
+
+    /** @brief Retorna cabeza de arcos salientes. */
+    NodoArco<T>* getArcoHead() const { return arcosHead; }
+
+    /** @brief Actualiza valor del vertice. */
+    void setInfo(const T& valor) { info = valor; }
+
+    /** @brief Actualiza puntero al siguiente vertice. */
+    void setNextVertice(NodoVertice<T>* ptrSig) { nextV = ptrSig; }
+
+    /** @brief Actualiza puntero a cabeza de arcos. */
+    void setArcosHead(NodoArco<T>* ptrArco) { arcosHead = ptrArco; }
+};
+
+/**
+ * @brief Grafo generico con soporte dirigido/no dirigido.
+ *
+ * La diferencia de comportamiento se controla con el atributo "dirigido".
+ * No se requiere crear clases hijas para cada tipo.
+ *
+ * @tparam T Tipo de dato de cada vertice.
+ */
+template <typename T>
+class Grafo {
+private:
+    NodoVertice<T>* verticeHead;
+    int nVertices;
+    int nArcos;
+    bool dirigido;
+
+    /** @brief Busca y retorna puntero interno del vertice o NULL si no existe. */
+    NodoVertice<T>* buscarVerticePtr(const T& valor) const {
+        NodoVertice<T>* actual = verticeHead;
+        while (actual) {
+            if (actual->getInfo() == valor) {
+                return actual;
+            }
+            actual = actual->getNextVertice();
+        }
+        return NULL;
+    }
+
+    /** @brief Verifica si existe arco origen -> destino. */
+    bool existeArcoInterno(NodoVertice<T>* origen, NodoVertice<T>* destino) const {
+        if (!origen || !destino) {
+            return false;
+        }
+
+        NodoArco<T>* arco = origen->getArcoHead();
+        while (arco) {
+            if (arco->getVertice() == destino) {
+                return true;
+            }
+            arco = arco->getNextArco();
+        }
+        return false;
+    }
+
+    /** @brief Inserta arco simple origen -> destino al inicio de la lista de arcos. */
+    void insertarArcoSimple(NodoVertice<T>* origen, NodoVertice<T>* destino, float peso) {
+        NodoArco<T>* nuevo = new NodoArco<T>(destino, origen->getArcoHead(), peso);
+        origen->setArcosHead(nuevo);
+    }
+
+    /** @brief Libera una lista de arcos. */
+    void liberarArcos(NodoArco<T>* headArcos) {
+        NodoArco<T>* actual = headArcos;
+        while (actual) {
+            NodoArco<T>* sig = actual->getNextArco();
+            delete actual;
+            actual = sig;
+        }
+    }
+
+    /** @brief Copia profunda del contenido de otro grafo. */
+    void copiarDesde(const Grafo<T>& other) {
+        dirigido = other.dirigido;
+        nVertices = 0;
+        nArcos = 0;
+        verticeHead = NULL;
+
+        Lista<T> vertices = other.getVertices();
+        while (!vertices.esVacia()) {
+            T valor = vertices.consultar(1);
+            insertarVertice(valor);
+            vertices.eliminar(1);
+        }
+
+        NodoVertice<T>* actual = other.verticeHead;
+        while (actual) {
+            NodoArco<T>* arco = actual->getArcoHead();
+            while (arco) {
+                insertarArco(actual->getInfo(), arco->getVertice()->getInfo(), arco->getPeso());
+                arco = arco->getNextArco();
+            }
+            actual = actual->getNextVertice();
+        }
+    }
+
+    /** @brief Verifica si un valor ya fue marcado como visitado. */
+    bool estaVisitado(const Lista<T>& visitados, const T& valor) const {
+        return visitados.buscar(valor) != -1;
+    }
+
+    /** @brief DFS recursivo interno para un vertice puntual. */
+    void dfsRecDesdeVertice(NodoVertice<T>* inicio, Lista<T>& visitados, Lista<T>& recorrido) const {
+        if (!inicio) {
+            return;
+        }
+
+        const T& valor = inicio->getInfo();
+        if (estaVisitado(visitados, valor)) {
+            return;
+        }
+
+        visitados.insertar(valor, visitados.getLong() + 1);
+        recorrido.insertar(valor, recorrido.getLong() + 1);
+
+        NodoArco<T>* arco = inicio->getArcoHead();
+        while (arco) {
+            NodoVertice<T>* sig = arco->getVertice();
+            if (!estaVisitado(visitados, sig->getInfo())) {
+                dfsRecDesdeVertice(sig, visitados, recorrido);
+            }
+            arco = arco->getNextArco();
+        }
+    }
+
+public:
+    /**
+     * @brief Construye un grafo vacio.
+     * @param esDirigido true para dirigido, false para no dirigido.
+     */
+    explicit Grafo(bool esDirigido = false)
+        : verticeHead(NULL), nVertices(0), nArcos(0), dirigido(esDirigido) {}
+
+    /** @brief Constructor de copia. */
+    Grafo(const Grafo<T>& other) : verticeHead(NULL), nVertices(0), nArcos(0), dirigido(false) {
+        copiarDesde(other);
+    }
+
+    /** @brief Operador de asignacion por copia. */
+    Grafo<T>& operator=(const Grafo<T>& other) {
+        if (this == &other) {
+            return *this;
+        }
+        vaciar();
+        copiarDesde(other);
+        return *this;
+    }
+
+    /** @brief Destructor. */
+    ~Grafo() {
+        vaciar();
+    }
+
+    /** @brief Retorna true si el grafo es dirigido. */
+    bool getEsDirigido() const { return dirigido; }
+
+    /** @brief Retorna cantidad de vertices. */
+    int getNNodos() const { return nVertices; }
+
+    /** @brief Retorna cantidad de arcos/aristas logicas. */
+    int getNArcos() const { return nArcos; }
+
+    /** @brief Retorna true si no hay vertices. */
+    bool esVacio() const { return nVertices == 0; }
+
+    /**
+     * @brief Retorna lista de vertices del grafo.
+     * @return Lista con todos los vertices.
+     */
+    Lista<T> getVertices() const {
+        Lista<T> result;
+        NodoVertice<T>* actual = verticeHead;
+        while (actual) {
+            result.insertar(actual->getInfo(), result.getLong() + 1);
+            actual = actual->getNextVertice();
+        }
+        return result;
+    }
+
+    /**
+     * @brief Verifica existencia de un vertice.
+     */
+    bool existeVertice(const T& valor) const {
+        return buscarVerticePtr(valor) != NULL;
+    }
+
+    /**
+     * @brief Inserta un vertice si no existe.
+     *
+     * Operacion idempotente: si ya existe, no hace cambios.
+     */
+    void insertarVertice(const T& valor) {
+        if (existeVertice(valor)) {
+            return;
+        }
+
+        NodoVertice<T>* nuevo = new NodoVertice<T>(valor, verticeHead, NULL);
+        verticeHead = nuevo;
+        ++nVertices;
+    }
+
+    /**
+     * @brief Inserta un arco/arista segun tipo de grafo.
+     *
+     * En dirigido inserta v->w.
+     * En no dirigido inserta v->w y w->v.
+     * Si vertices no existen, se crean.
+     */
+    void insertarArco(const T& v, const T& w, float peso = 1.0f) {
+        if (!existeVertice(v)) {
+            insertarVertice(v);
+        }
+        if (!existeVertice(w)) {
+            insertarVertice(w);
+        }
+
+        NodoVertice<T>* origen = buscarVerticePtr(v);
+        NodoVertice<T>* destino = buscarVerticePtr(w);
+
+        bool agregoVW = false;
+        bool agregoWV = false;
+
+        if (!existeArcoInterno(origen, destino)) {
+            insertarArcoSimple(origen, destino, peso);
+            agregoVW = true;
+        }
+
+        if (!dirigido && origen != destino && !existeArcoInterno(destino, origen)) {
+            insertarArcoSimple(destino, origen, peso);
+            agregoWV = true;
+        }
+
+        if (dirigido) {
+            if (agregoVW) {
+                ++nArcos;
+            }
+        } else {
+            if (origen == destino) {
+                if (agregoVW) {
+                    ++nArcos;
+                }
+            } else if (agregoVW || agregoWV) {
+                ++nArcos;
+            }
+        }
+    }
+
+    /**
+     * @brief Verifica si existe arco v->w.
+     */
+    bool existeArco(const T& v, const T& w) const {
+        NodoVertice<T>* origen = buscarVerticePtr(v);
+        NodoVertice<T>* destino = buscarVerticePtr(w);
+        return existeArcoInterno(origen, destino);
+    }
+
+    /**
+     * @brief Retorna sucesores de v.
+     * @throw invalid_argument Si v no existe.
+     */
+    Lista<T> getSucesores(const T& v) const {
+        NodoVertice<T>* origen = buscarVerticePtr(v);
+        if (!origen) {
+            throw invalid_argument("Vertice no existe en getSucesores");
+        }
+
+        Lista<T> result;
+        NodoArco<T>* arco = origen->getArcoHead();
+        while (arco) {
+            result.insertar(arco->getVertice()->getInfo(), result.getLong() + 1);
+            arco = arco->getNextArco();
+        }
+        return result;
+    }
+
+    /**
+     * @brief Retorna predecesores de v.
+     *
+     * En no dirigido coincide con vecinos.
+     * @throw invalid_argument Si v no existe.
+     */
+    Lista<T> getPredecesores(const T& v) const {
+        NodoVertice<T>* destino = buscarVerticePtr(v);
+        if (!destino) {
+            throw invalid_argument("Vertice no existe en getPredecesores");
+        }
+
+        if (!dirigido) {
+            return getSucesores(v);
+        }
+
+        Lista<T> result;
+        NodoVertice<T>* actual = verticeHead;
+        while (actual) {
+            if (existeArcoInterno(actual, destino)) {
+                result.insertar(actual->getInfo(), result.getLong() + 1);
+            }
+            actual = actual->getNextVertice();
+        }
+        return result;
+    }
+
+    /**
+     * @brief Retorna vecinos de v.
+     *
+     * En no dirigido: vecinos directos.
+     * En dirigido: sucesores de v.
+     * @throw invalid_argument Si v no existe.
+     */
+    Lista<T> getVecinos(const T& v) const {
+        return getSucesores(v);
+    }
+
+    /**
+     * @brief Retorna grado del vertice.
+     *
+     * En dirigido retorna grado de salida.
+     * En no dirigido retorna cantidad de vecinos.
+     * @throw invalid_argument Si v no existe.
+     */
+    int getGradoVertice(const T& v) const {
+        return getVecinos(v).getLong();
+    }
+
+    /**
+     * @brief BFS desde un vertice inicial.
+     * @throw invalid_argument Si inicio no existe.
+     */
+    Lista<T> bfs(const T& inicio) const {
+        NodoVertice<T>* ptrInicio = buscarVerticePtr(inicio);
+        if (!ptrInicio) {
+            throw invalid_argument("Vertice inicial no existe en bfs");
+        }
+
+        Lista<T> recorrido;
+        Lista<T> visitados;
+        Cola<NodoVertice<T>*> colaAux;
+
+        colaAux.encolar(ptrInicio);
+        visitados.insertar(ptrInicio->getInfo(), visitados.getLong() + 1);
+
+        while (!colaAux.esVacia()) {
+            NodoVertice<T>* actual = colaAux.getFrente();
+            colaAux.desencolar();
+
+            recorrido.insertar(actual->getInfo(), recorrido.getLong() + 1);
+
+            NodoArco<T>* arco = actual->getArcoHead();
+            while (arco) {
+                NodoVertice<T>* vecino = arco->getVertice();
+                if (!estaVisitado(visitados, vecino->getInfo())) {
+                    visitados.insertar(vecino->getInfo(), visitados.getLong() + 1);
+                    colaAux.encolar(vecino);
+                }
+                arco = arco->getNextArco();
             }
         }
 
-        // Getters
-        T getInfo() { return this->info; }
-        NodoVertice* getNextVertice(){ return this->next; }
-        NodoArco* getArcoHead(){ return this->arcosHead; }
+        return recorrido;
+    }
 
+    /**
+     * @brief BFS por componentes en todo el grafo.
+     */
+    Lista<T> bfs() const {
+        Lista<T> recorrido;
+        Lista<T> visitados;
 
-        // Setters
-        void setInfo(T infoNew){ this->info = infoNew; }
-        void setNextVertice(NodoVertice *verticeNew){ this->next = verticeNew; }
-        void setArcosHead(NodoArco *arcosHeadNew){ this->arcosHead = arcosHeadNew; }
+        NodoVertice<T>* inicio = verticeHead;
+        while (inicio) {
+            if (!estaVisitado(visitados, inicio->getInfo())) {
+                Cola<NodoVertice<T>*> colaAux;
+                colaAux.encolar(inicio);
+                visitados.insertar(inicio->getInfo(), visitados.getLong() + 1);
 
+                while (!colaAux.esVacia()) {
+                    NodoVertice<T>* actual = colaAux.getFrente();
+                    colaAux.desencolar();
+
+                    recorrido.insertar(actual->getInfo(), recorrido.getLong() + 1);
+
+                    NodoArco<T>* arco = actual->getArcoHead();
+                    while (arco) {
+                        NodoVertice<T>* vecino = arco->getVertice();
+                        if (!estaVisitado(visitados, vecino->getInfo())) {
+                            visitados.insertar(vecino->getInfo(), visitados.getLong() + 1);
+                            colaAux.encolar(vecino);
+                        }
+                        arco = arco->getNextArco();
+                    }
+                }
+            }
+            inicio = inicio->getNextVertice();
+        }
+
+        return recorrido;
+    }
+
+    /**
+     * @brief DFS desde un vertice inicial.
+     * @throw invalid_argument Si inicio no existe.
+     */
+    Lista<T> dfs(const T& inicio) const {
+        NodoVertice<T>* ptrInicio = buscarVerticePtr(inicio);
+        if (!ptrInicio) {
+            throw invalid_argument("Vertice inicial no existe en dfs");
+        }
+
+        Lista<T> recorrido;
+        Lista<T> visitados;
+        dfsRecDesdeVertice(ptrInicio, visitados, recorrido);
+        return recorrido;
+    }
+
+    /**
+     * @brief DFS por componentes en todo el grafo.
+     */
+    Lista<T> dfs() const {
+        Lista<T> recorrido;
+        Lista<T> visitados;
+
+        NodoVertice<T>* actual = verticeHead;
+        while (actual) {
+            if (!estaVisitado(visitados, actual->getInfo())) {
+                dfsRecDesdeVertice(actual, visitados, recorrido);
+            }
+            actual = actual->getNextVertice();
+        }
+
+        return recorrido;
+    }
+
+    /**
+     * @brief Imprime el grafo en formato de lista de adyacencia.
+     */
+    void imprimirAdyacencia(ostream& os = cout) const {
+        if (!verticeHead) {
+            os << "(grafo vacio)";
+            return;
+        }
+
+        NodoVertice<T>* vertice = verticeHead;
+        while (vertice) {
+            os << vertice->getInfo() << " -> [";
+            NodoArco<T>* arco = vertice->getArcoHead();
+            bool primero = true;
+
+            while (arco) {
+                if (!primero) {
+                    os << ", ";
+                }
+                os << arco->getVertice()->getInfo();
+                primero = false;
+                arco = arco->getNextArco();
+            }
+
+            os << "]";
+            vertice = vertice->getNextVertice();
+            if (vertice) {
+                os << "\n";
+            }
+        }
+    }
+
+    /**
+     * @brief Imprime adyacencia con formato ASCII extendido.
+     */
+    void imprimirAdyacenciaDetallada(ostream& os = cout) const {
+        if (!verticeHead) {
+            os << "(grafo vacio)";
+            return;
+        }
+
+        os << "Grafo " << (dirigido ? "dirigido" : "no dirigido")
+           << " | Vertices: " << nVertices
+           << " | Arcos/Aristas: " << nArcos << "\n";
+
+        NodoVertice<T>* vertice = verticeHead;
+        while (vertice) {
+            os << "+- " << vertice->getInfo() << "\n";
+            NodoArco<T>* arco = vertice->getArcoHead();
+
+            if (!arco) {
+                os << "   `- (sin conexiones)\n";
+            } else {
+                while (arco) {
+                    os << "   |- " << arco->getVertice()->getInfo()
+                       << " (peso=" << arco->getPeso() << ")\n";
+                    arco = arco->getNextArco();
+                }
+            }
+
+            vertice = vertice->getNextVertice();
+        }
+    }
+
+    /**
+     * @brief Libera todo el contenido del grafo.
+     */
+    void vaciar() {
+        NodoVertice<T>* actual = verticeHead;
+        while (actual) {
+            NodoVertice<T>* sig = actual->getNextVertice();
+            liberarArcos(actual->getArcoHead());
+            delete actual;
+            actual = sig;
+        }
+
+        verticeHead = NULL;
+        nVertices = 0;
+        nArcos = 0;
+    }
 };
 
-template <typename T>
-class Grafo{
-    private:
-        // Attributes
-        NodoVertice<T> *verticeHead;
-        int nVertices, nArcos;
-        bool esDirigido;
-
-        // Methods
-    public:
-        // Constructores
-        Grafo() : verticeHead(NULL), nVertices(0), nArcos(0), esDirigido(false) {}
-        Grafo(T newV, T newW, int peso = 0) {
-            NodoVertice<T> *nuevo = new NodoVertice<T>(newV);
-            this->verticeHead = nuevo;
-            nuevo = new NodoVertice<T>(newW);
-            this->verticeHead->setNext(nuevo);
-        }
-        // Getters
-        T getVerticeHead(){ return this->verticeHead->getInfo() }
-        int getNNodos(){ return this->nVertices }
-        int getNArcos(){ return this->nArcos }
-        bool esDirigido(){ return this->esDirigido }
-
-        // Setters
-        void setVerticeHead(T verticeHeadNew){
-            this->verticeHead = new NodoVertice<T>(verticeHeadNew);
-            this->nVertices = 1;
-            this->nArcos = 
-        }
-};
 #endif

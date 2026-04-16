@@ -1,5 +1,7 @@
 # Guía de entrada estándar en C++ (incluyendo casos difíciles)
 
+[Volver al README principal](../../README.md)
+
 ## 1) Reglas básicas de extracción
 
 - `std::cin >> x`:

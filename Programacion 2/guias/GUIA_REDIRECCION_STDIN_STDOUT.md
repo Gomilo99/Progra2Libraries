@@ -1,5 +1,7 @@
 # Guía: pasar archivos por entrada estándar y guardar salida
 
+[Volver al README principal](../../README.md)
+
 ## 1) Concepto
 
 - `stdin` (entrada estándar): datos que consume el programa.
