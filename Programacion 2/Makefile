@@ -22,8 +22,8 @@ endif
 SOURCES := $(wildcard $(SRC_DIR)/*.cpp)
 TARGETS := $(patsubst $(SRC_DIR)/%.cpp,$(BIN_DIR)/%$(EXE_EXT),$(SOURCES))
 
-EX ?= 1-2026_ordenMundial
-DATA_DIR ?= talleres_arboles
+EX ?= 2-2025_ordenMundial
+DATA_DIR ?= talleres_grafos
 IN ?= $(DATA_DIR)/in.txt
 OUT ?= $(DATA_DIR)/out.txt
 

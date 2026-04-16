@@ -2,6 +2,7 @@
 #include <string>
 #include <sstream>
 #include "../include/Grafos.hpp"
+#include "../include/VisualizacionGrafos.hpp"
 
 using namespace std;
 
@@ -25,40 +26,36 @@ int main() {
     // y la lectura se mantiene hasta EOF.
     string linea;
     while (getline(cin, linea)) {
-        // Si la linea viene vacia, se ignora y se pasa a la siguiente.
-        if (linea.empty()) {
-            continue;
+        // Solo se procesa una linea no vacia y con formato valido (exactamente 2 tokens).
+        if (!linea.empty()) {
+            // stringstream permite partir la linea en tokens por espacios.
+            stringstream ss(linea);
+            string aeropuertoA;
+            string aeropuertoB;
+
+            // Si no se logran leer exactamente dos nombres, se descarta la linea.
+            if (ss >> aeropuertoA >> aeropuertoB) {
+                // Si hay basura extra en la linea (mas de dos tokens), tambien se descarta.
+                string tokenExtra;
+                if (!(ss >> tokenExtra)) {
+                    // Paso 1: garantizar que ambos aeropuertos existan como vertices.
+                    redAerea.insertarVertice(aeropuertoA);
+                    redAerea.insertarVertice(aeropuertoB);
+
+                    // Paso 2: agregar la conexion entre ambos.
+                    // Como el grafo es no dirigido, internamente se agregan ambos sentidos.
+                    redAerea.insertarArco(aeropuertoA, aeropuertoB);
+                }
+            }
         }
-
-        // stringstream permite partir la linea en tokens por espacios.
-        stringstream ss(linea);
-        string aeropuertoA;
-        string aeropuertoB;
-
-        // Si no se logran leer exactamente dos nombres, se descarta la linea.
-        if (!(ss >> aeropuertoA >> aeropuertoB)) {
-            continue;
-        }
-
-        // Si hay basura extra en la linea (mas de dos tokens), tambien se descarta.
-        string tokenExtra;
-        if (ss >> tokenExtra) {
-            continue;
-        }
-
-        // Paso 1: garantizar que ambos aeropuertos existan como vertices.
-        redAerea.insertarVertice(aeropuertoA);
-        redAerea.insertarVertice(aeropuertoB);
-
-        // Paso 2: agregar la conexion entre ambos.
-        // Como el grafo es no dirigido, internamente se agregan ambos sentidos.
-        redAerea.insertarArco(aeropuertoA, aeropuertoB);
     }
 
     // Salida de depuracion: muestra como quedo construida la red.
     // En la fase de resolucion del problema, aqui se reemplazara por
     // la impresion del conjunto independiente maximo.
-    redAerea.imprimirAdyacencia();
+    redAerea.imprimirAdyacenciaDetallada();
+    imprimirGrafoBonitoCLI(redAerea);
+    bool ok = exportarGrafoASVG(redAerea, "talleres_grafos/grafos.svg", true, 1000, 700);
 
     return 0;
 }

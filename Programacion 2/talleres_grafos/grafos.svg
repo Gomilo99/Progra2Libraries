@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="700" viewBox="0 0 1000 700">
+  <rect x="0" y="0" width="1000" height="700" fill="#FAFBFD"/>
+  <style>
+    .nodo{fill:#EEF6FF;stroke:#2E5D8A;stroke-width:1.6;}
+    .textoNodo{font-family:DejaVu Sans,Arial,sans-serif;font-size:14px;fill:#12344D;text-anchor:middle;dominant-baseline:middle;}
+    .arista{stroke:#4A4A4A;stroke-width:1.5;fill:none;}
+    .peso{font-family:DejaVu Sans,Arial,sans-serif;font-size:12px;fill:#2C3E50;text-anchor:middle;dominant-baseline:middle;}
+    .titulo{font-family:DejaVu Sans,Arial,sans-serif;font-size:18px;fill:#0F172A;font-weight:bold;}
+  </style>
+  <text class="titulo" x="20" y="35">Grafo no dirigido | Vertices: 12 | Arcos: 11</text>
+  <line class="arista" x1="527.046" y1="125.247" x2="598.954" y2="144.515"/>
+  <text class="peso" x="560.412" y="144.54">1.0</text>
+  <line class="arista" x1="645.799" y1="171.561" x2="698.439" y2="224.201"/>
+  <text class="peso" x="665.048" y="204.952">1.0</text>
+  <line class="arista" x1="727.751" y1="356" x2="398.249" y2="165.762"/>
+  <text class="peso" x="568" y="252.221">1.0</text>
+  <line class="arista" x1="693.99" y1="510" x2="524.249" y2="608"/>
+  <text class="peso" x="604.119" y="550.34">1.0</text>
+  <line class="arista" x1="598.954" y1="580.991" x2="308.808" y2="503.247"/>
+  <text class="peso" x="456.469" y="532.46">1.0</text>
+  <line class="arista" x1="492.753" y1="594.954" x2="381.247" y2="178.808"/>
+  <text class="peso" x="446.659" y="384.293">1.0</text>
+  <line class="arista" x1="472.954" y1="614.753" x2="401.046" y2="595.485"/>
+  <text class="peso" x="439.588" y="595.46">1.0</text>
+  <line class="arista" x1="366.753" y1="561.192" x2="289.009" y2="271.046"/>
+  <text class="peso" x="337.54" y="413.531">1.0</text>
+  <line class="arista" x1="289.009" y1="468.954" x2="366.753" y2="178.808"/>
+  <text class="peso" x="337.54" y="326.469">1.0</text>
+  <line class="arista" x1="255.247" y1="342.954" x2="274.515" y2="271.046"/>
+  <text class="peso" x="274.54" y="309.588">1.0</text>
+  <line class="arista" x1="301.561" y1="224.201" x2="354.201" y2="171.561"/>
+  <text class="peso" x="334.952" y="204.952">1.0</text>
+  <circle class="nodo" cx="500" cy="118" r="28"/>
+  <text class="textoNodo" x="500" y="118">Trump</text>
+  <circle class="nodo" cx="626" cy="151.762" r="28"/>
+  <text class="textoNodo" x="626" y="151.762">NuevaYork</text>
+  <circle class="nodo" cx="718.238" cy="244" r="28"/>
+  <text class="textoNodo" x="718.238" y="244">Maduro</text>
+  <circle class="nodo" cx="752" cy="370" r="28"/>
+  <text class="textoNodo" x="752" y="370">Francia</text>
+  <circle class="nodo" cx="718.238" cy="496" r="28"/>
+  <text class="textoNodo" x="718.238" y="496">Guigue</text>
+  <circle class="nodo" cx="626" cy="588.238" r="28"/>
+  <text class="textoNodo" x="626" y="588.238">Mexico</text>
+  <circle class="nodo" cx="500" cy="622" r="28"/>
+  <text class="textoNodo" x="500" y="622">Venezuela</text>
+  <circle class="nodo" cx="374" cy="588.238" r="28"/>
+  <text class="textoNodo" x="374" y="588.238">Ecuador</text>
+  <circle class="nodo" cx="281.762" cy="496" r="28"/>
+  <text class="textoNodo" x="281.762" y="496">Dinamarca</text>
+  <circle class="nodo" cx="248" cy="370" r="28"/>
+  <text class="textoNodo" x="248" y="370">Camboya</text>
+  <circle class="nodo" cx="281.762" cy="244" r="28"/>
+  <text class="textoNodo" x="281.762" y="244">Belgica</text>
+  <circle class="nodo" cx="374" cy="151.762" r="28"/>
+  <text class="textoNodo" x="374" y="151.762">Alemania</text>
+</svg>
