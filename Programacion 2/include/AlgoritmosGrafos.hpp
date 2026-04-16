@@ -694,7 +694,7 @@ Lista<T> reconstruirCaminoMapeado(const T& origen,
 
     indicesInvertidos.push_back(idxOrigen);
 
-    map<int, T> verticePorIndice;
+    vector<T> verticePorIndice(idDe.size());
     typename map<T, int>::const_iterator itMap = idDe.begin();
     while (itMap != idDe.end()) {
         verticePorIndice[itMap->second] = itMap->first;
