@@ -22,9 +22,9 @@ endif
 SOURCES := $(wildcard $(SRC_DIR)/*.cpp)
 TARGETS := $(patsubst $(SRC_DIR)/%.cpp,$(BIN_DIR)/%$(EXE_EXT),$(SOURCES))
 
-EX ?= 2-2025_ordenMundial
+EX ?= 1-2026_ultimaOla
 DATA_DIR ?= talleres_grafos
-IN ?= $(DATA_DIR)/in.txt
+IN ?= $(DATA_DIR)/caso_mediano.in.txt
 OUT ?= $(DATA_DIR)/out.txt
 
 ifeq ($(OUTPUT_MODE),fixed)
