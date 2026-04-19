@@ -2,6 +2,12 @@
 
 Repositorio de estudio y práctica para Algoritmos y Programación 1/2.
 
+Este repositorio se hizo con ayuda de inteligencia artificial (Chat GPT 5.3 codex) con el fin de apoyar a cualquier estudiante de la materia, de modo que pueda revisar sus soluciones y comparar. No tomar las soluiones como absolutas, se recomienda cotejar los resultados y si se aporta una mejora es totalmente bienvenida. También se recomienda utilizar cualquier modelo LLM de frontera que pueda mejorar algún programa particular.
+
+Los gráficos dibujados se hicieron utlizando excalisdraw mediante la aplicación [Obsidian](https://obsidian.md/).
+
+**Limitaciones**: La clase de árboles AVL está incompleta, faltan los ejemplos de solución de ejercicios de balanceo. De igual manera para las soluciones de parciales de árboles no se registraron las soluciones de balanceo de árboles AVL.
+
 ## Índice rápido
 
 - [Estructura general](#estructura-general)
@@ -97,6 +103,11 @@ Ubicación: [Programación 2/include/](Programacion%202/include/)
 - [Ejercicios.hpp](Programacion%202/include/Ejercicios.hpp)
 
 ## Talleres y casos de prueba
+>Importante: Los talleres pueden contener errores. No tomar como solución absoluta.
+>
+>Las soluciones que se suponen como correctas son 1-2026_asamblea y 1-2026_ultimaOla de LPC y Grafos, respectivamente.
+>
+>La solución del taller de árboles "rutaDefensa" no es correcta pero se mantuvo como base con dos versiones adicionales hechas con IA: una que mejoró la base manteniendo la lógica y otra O(n).
 
 ### LPC (Listas, Pilas, Colas)
 
@@ -166,11 +177,17 @@ Ubicación: [Programación 2/include/](Programacion%202/include/)
 
 Archivo base: [Programación 2/Makefile](Programacion%202/Makefile)
 
-No hace falta describir las rutas explícitamente en bash si se escriben en el **Makefile** directamente, es decir, se actualizan las propias rutas ahí en vez de en bash.
+No hace falta describir las rutas explícitamente en bash si se sobreescriben en el **Makefile** directamente, es decir, se actualizan las propias rutas ahí en vez de en bash.
+
+Comando de ayuda: `make help`
 
 Ejemplos:
 
 ```bash
+# Sin modificaciones en bash, sino en el make
+make
+make run-file
+
 # Compilar un taller puntual
 make one SRC_DIR=talleres_grafos EX=2-2025_ordenMundial
 
