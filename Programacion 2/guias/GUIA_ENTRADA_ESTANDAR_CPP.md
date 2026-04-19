@@ -2,6 +2,15 @@
 
 [Volver al README principal](../../README.md)
 
+## 0) Alcance de esta guía (LPC)
+
+- Esta guía está enfocada en resolver talleres de **LPC** con los TAD vistos en clase.
+- Para los ejemplos de parseo y almacenamiento, se prioriza `Lista<T>` (sin `vector`/arreglos).
+- Las entradas reales de referencia están en:
+    - `Programacion 2/talleres_lpc/in_*.txt`
+    - `Programacion 2/talleres_lpc/out_*.txt`
+    - Casos grandes recientes: `in_1-2026_caso_*.txt` y `out_1-2026_caso_*.txt`
+
 ## 1) Reglas básicas de extracción
 
 - `std::cin >> x`:
@@ -39,14 +48,16 @@ std::getline(std::cin, linea);
 Ejemplo leído correctamente:
 `"hola, mundo", 123, "a b c"`
 
-### Caso B: parsear CSV simple (comas dentro de comillas y comillas escapadas `""`)
+### Caso B: parsear CSV simple (comas dentro de comillas y comillas escapadas `""`) sin `vector`
+
+> En LPC, esta guía prioriza `Lista<T>` y punteros. Evitá `vector`/arreglos para resolver talleres.
 
 ```cpp
-#include <vector>
 #include <string>
+#include "Lista.hpp"
 
-std::vector<std::string> splitCSVSimple(const std::string& s) {
-    std::vector<std::string> out;
+Lista<std::string> splitCSVSimpleToLista(const std::string& s) {
+    Lista<std::string> out;
     std::string current;
     bool inQuotes = false;
 
@@ -61,13 +72,14 @@ std::vector<std::string> splitCSVSimple(const std::string& s) {
                 inQuotes = !inQuotes; // abre/cierra comillas
             }
         } else if (ch == ',' && !inQuotes) {
-            out.push_back(current);
+            out.insertar(current, out.getLong() + 1);
             current.clear();
         } else {
             current.push_back(ch);
         }
     }
-    out.push_back(current);
+
+    out.insertar(current, out.getLong() + 1);
     return out;
 }
 ```
@@ -113,6 +125,73 @@ std::string contenido(
 4. Emitir resultados en formato fijo.
 
 Este patrón evita la mayoría de errores con espacios, comas y comillas.
+
+## 8) `stringstream`, `istringstream` (`iss`) y `ostringstream`
+
+Nota: a veces se escucha "streamstring", pero el nombre correcto en C++ es `stringstream`.
+
+### ¿Qué son y cuándo usarlos?
+
+- `std::stringstream ss(linea)`:
+    - Flujo en memoria para **leer y escribir** sobre un `string`.
+    - Muy útil en LPC para parsear líneas que vienen con varios tokens.
+
+- `std::istringstream iss(linea)`:
+    - Flujo en memoria para **solo lectura** desde un `string`.
+    - `iss` no es una función: es solo un nombre de variable común (`input string stream`).
+    - Se usó bastante en ejercicios de grafos para parsear líneas tipo `u v peso`.
+
+- `std::ostringstream oss`:
+    - Flujo en memoria para **solo escritura** hacia un `string`.
+    - Sirve para construir salidas paso a paso y luego hacer `oss.str()`.
+
+### ¿Cómo funciona `iss` en la práctica?
+
+```cpp
+std::string linea = "10 20 30";
+std::istringstream iss(linea);
+
+int a, b, c;
+if (iss >> a >> b >> c) {
+        // lectura correcta: a=10, b=20, c=30
+}
+```
+
+Puntos clave:
+
+- `>>` avanza un cursor interno sobre el texto.
+- `>>` salta espacios automáticamente.
+- La condición `while (iss >> x)` termina en EOF o en error de formato.
+- Si falla una conversión (ej. esperaba `int` y viene `abc`), el stream queda en estado de fallo.
+
+### Ejemplo típico usado en grafos
+
+```cpp
+std::string linea;
+std::getline(std::cin, linea);
+
+std::istringstream iss(linea);
+int u, v;
+double peso;
+
+if (iss >> u >> v >> peso) {
+        // arista valida
+}
+```
+
+### Relación con LPC
+
+- En LPC normalmente alcanza con `getline + stringstream`.
+- `iss` es el mismo concepto pero más explícito para lectura.
+- Aunque no sea obligatorio en LPC, entender `iss` ayuda para cursos/talleres de grafos.
+
+### Otras maneras en las que se usa `string` en esta guía
+
+- Como **línea cruda** de entrada (`getline`).
+- Como **acumulador de campo** (`current`) durante parseo CSV.
+- Como **buffer normalizado** (`normalizeQuotes`) antes de parsear.
+- Como **fuente de tokens** al pasarla a `stringstream`/`iss`.
+- Como **salida construida** cuando se usa `ostringstream`.
 
 ## 9) Funciones de `string` usadas en este código (con ejemplos)
 
