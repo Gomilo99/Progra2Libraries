@@ -1,0 +1,71 @@
+Grafo no dirigido | Vertices: 12 | Arcos/Aristas: 11
++- Trump
+   |- NuevaYork (peso=1)
++- NuevaYork
+   |- Trump (peso=1)
+   |- Maduro (peso=1)
++- Maduro
+   |- NuevaYork (peso=1)
++- Francia
+   |- Alemania (peso=1)
++- Guigue
+   |- Venezuela (peso=1)
++- Mexico
+   |- Dinamarca (peso=1)
++- Venezuela
+   |- Guigue (peso=1)
+   |- Alemania (peso=1)
+   |- Ecuador (peso=1)
++- Ecuador
+   |- Venezuela (peso=1)
+   |- Belgica (peso=1)
++- Dinamarca
+   |- Mexico (peso=1)
+   |- Alemania (peso=1)
++- Camboya
+   |- Belgica (peso=1)
++- Belgica
+   |- Ecuador (peso=1)
+   |- Camboya (peso=1)
+   |- Alemania (peso=1)
++- Alemania
+   |- Francia (peso=1)
+   |- Venezuela (peso=1)
+   |- Dinamarca (peso=1)
+   |- Belgica (peso=1)
++--------------------------+
+|  Tipo      : No dirigido |
+|  Vertices  : 12          |
+|  Arcos     : 11          |
++--------------------------+
+
+Lista de adyacencia
+====================
+    Trump | NuevaYork {1.0}
+NuevaYork | Trump {1.0}  ->  Maduro {1.0}
+   Maduro | NuevaYork {1.0}
+  Francia | Alemania {1.0}
+   Guigue | Venezuela {1.0}
+   Mexico | Dinamarca {1.0}
+Venezuela | Guigue {1.0}  ->  Alemania {1.0}  ->  Ecuador {1.0}
+  Ecuador | Venezuela {1.0}  ->  Belgica {1.0}
+Dinamarca | Mexico {1.0}  ->  Alemania {1.0}
+  Camboya | Belgica {1.0}
+  Belgica | Ecuador {1.0}  ->  Camboya {1.0}  ->  Alemania {1.0}
+ Alemania | Francia {1.0}  ->  Venezuela {1.0}  ->  Dinamarca {1.0}  ->  Belgica {1.0}
+
+Matriz de adyacencia
+          |      Trump  NuevaYork     Maduro    Francia     Guigue     Mexico  Venezuela    Ecuador  Dinamarca    Camboya    Belgica   Alemania
+----------+------------------------------------------------------------------------------------------------------------------------------------
+    Trump |          .          1          .          .          .          .          .          .          .          .          .          .
+NuevaYork |          1          .          1          .          .          .          .          .          .          .          .          .
+   Maduro |          .          1          .          .          .          .          .          .          .          .          .          .
+  Francia |          .          .          .          .          .          .          .          .          .          .          .          1
+   Guigue |          .          .          .          .          .          .          1          .          .          .          .          .
+   Mexico |          .          .          .          .          .          .          .          .          1          .          .          .
+Venezuela |          .          .          .          .          1          .          .          1          .          .          .          1
+  Ecuador |          .          .          .          .          .          .          1          .          .          .          1          .
+Dinamarca |          .          .          .          .          .          1          .          .          .          .          .          1
+  Camboya |          .          .          .          .          .          .          .          .          .          .          1          .
+  Belgica |          .          .          .          .          .          .          .          1          .          1          .          1
+ Alemania |          .          .          .          1          .          .          1          .          1          .          1          .

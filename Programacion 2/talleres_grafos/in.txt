@@ -1,11 +1,11 @@
-Alemania Belgica
-Belgica Camboya
-Alemania Dinamarca
-Belgica Ecuador
-Venezuela Ecuador
-Venezuela Alemania
-Mexico Dinamarca
-Guigue Venezuela
-Alemania Francia
-Maduro NuevaYork
-NuevaYork Trump
+8 7
+0 1
+1 2
+2 3
+1 4
+4 5
+5 6
+5 7
+
+2
+0 7

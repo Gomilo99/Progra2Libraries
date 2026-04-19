@@ -36,6 +36,10 @@ public:
         }
     }
 
+    Cola(const T other) : frente(NULL), ultimo(NULL), length(0){
+        this->encolar(other);
+    }
+
     /**
      * @brief Operador de asignacion por copia.
      * @param other Cola origen.
